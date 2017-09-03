@@ -1593,9 +1593,6 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         setInputText();
     }
 
-    /**
-     * Inner class to start the settings fragment
-     */
     public void openSettings(View view) {
         Intent intent = new Intent(this, AppPreferenceActivity.class);
         startActivity(intent);
