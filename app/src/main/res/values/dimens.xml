@@ -1,0 +1,14 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="ad_background_height">112dp</dimen>
+    <dimen name="adview_margin_bottom">16dp</dimen>
+    <dimen name="adview_margin_top">16dp</dimen>
+
+    <dimen name="timer_notif_image_margin_start_end">8dp</dimen>
+
+    <dimen name="timer_notif_t_margin_start">8dp</dimen>
+    <dimen name="timer_notif_t_margin_end">8dp</dimen>
+</resources>

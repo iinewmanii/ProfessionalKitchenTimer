@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:soundEffectsEnabled="false"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/activity_vertical_margin"
+    android:layout_marginStart="@dimen/activity_horizontal_margin"
+    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    tools:context="com.professionalkitchentimer.iinewmanii.professionalkitchentimer.MainActivity">
+
+    <ImageView
+        android:id="@+id/pkt_header"
+        android:layout_width="@dimen/pkt_header_width"
+        android:layout_height="@dimen/pkt_header_height"
+        android:layout_marginTop="@dimen/pkt_header_margin_top"
+        android:layout_marginBottom="@dimen/vertical_whitespace_divider"
+        android:background="@drawable/ic_pkt_header"/>
+
+    <ImageButton
+        android:id="@+id/settings_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/ic_pkt_settings"
+        android:onClick="openSettings"/>
+
+    <Button
+        style="?android:attr/buttonBarButtonStyle"
+        android:id="@+id/t1_button"
+        android:layout_width="@dimen/t_switch_button_width"
+        android:layout_height="@dimen/t_switch_button_height"
+        android:background="@drawable/t_switch_button"
+        android:drawableBottom="@drawable/t1_indicator"
+        android:paddingBottom="12dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/t1_button_text"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/pkt_button_text_size"
+        android:textStyle="bold"
+        android:layout_below="@id/pkt_header"
+        android:layout_alignParentStart="true"
+        android:onClick="timerOneButton"/>
+
+    <Button
+        style="?android:attr/buttonBarButtonStyle"
+        android:id="@+id/t2_button"
+        android:layout_width="@dimen/t_switch_button_width"
+        android:layout_height="@dimen/t_switch_button_height"
+        android:layout_below="@id/pkt_header"
+        android:layout_toEndOf="@id/t1_button"
+        android:background="@drawable/t_switch_button"
+        android:drawableBottom="@drawable/t2_indicator"
+        android:paddingBottom="12dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/t2_button_text"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/pkt_button_text_size"
+        android:textStyle="bold"
+        android:onClick="timerTwoButton"/>
+
+    <Button
+        style="?android:attr/buttonBarButtonStyle"
+        android:id="@+id/t3_button"
+        android:layout_width="@dimen/t_switch_button_width"
+        android:layout_height="@dimen/t_switch_button_height"
+        android:layout_below="@id/pkt_header"
+        android:layout_toEndOf="@id/t2_button"
+        android:background="@drawable/t_switch_button"
+        android:drawableBottom="@drawable/t3_indicator"
+        android:paddingBottom="12dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/t3_button_text"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/pkt_button_text_size"
+        android:textStyle="bold"
+        android:onClick="timerThreeButton"/>
+
+    <Button
+        style="?android:attr/buttonBarButtonStyle"
+        android:id="@+id/t4_button"
+        android:layout_width="@dimen/t_switch_button_width"
+        android:layout_height="@dimen/t_switch_button_height"
+        android:layout_below="@id/pkt_header"
+        android:layout_toEndOf="@id/t3_button"
+        android:background="@drawable/t_switch_button"
+        android:drawableBottom="@drawable/t4_indicator"
+        android:paddingBottom="12dp"
+        android:text="@string/t4_button_text"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/pkt_button_text_size"
+        android:textStyle="bold"
+        android:onClick="timerFourButton"/>
+
+    <ImageView
+        android:soundEffectsEnabled="false"
+        android:id="@+id/lcd_background_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/lcd_background_height"
+        android:layout_below="@id/t4_button"
+        android:layout_marginTop="@dimen/vertical_whitespace_divider"
+        android:background="@drawable/lcd_background"/>
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_burn_in_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/clock_text_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/lcd_background_view"
+        android:layout_alignEnd="@id/lcd_background_view"
+        android:paddingTop="8dp"
+        android:paddingStart="2dp"
+        android:paddingEnd="8dp"
+        android:includeFontPadding="false"
+        android:text="@string/lcd_burn_in"
+        android:textColor="@color/lcd_burn"/>
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_clockface_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/time_input_seconds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/lcd_background_view"
+        android:layout_alignEnd="@id/lcd_background_view"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="0dp"
+        android:text="@string/minutes_input_hint" />
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_clockface_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/time_input_minutes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/lcd_background_view"
+        android:layout_toStartOf="@id/time_input_seconds"
+        android:text="@string/minutes_input_hint" />
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_clockface_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/time_input_hours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/lcd_background_view"
+        android:layout_toStartOf="@id/time_input_minutes"
+        android:paddingStart="2dp"
+        android:paddingEnd="0dp"
+        android:text="@string/hour_input_hint" />
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_clockface_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/clock_text_view_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/lcd_background_view"
+        android:layout_alignEnd="@id/lcd_background_view"
+        android:paddingStart="2dp"
+        android:paddingEnd="8dp"
+        android:text="@string/hms_zero" />
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_clockface_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/clock_text_view_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/lcd_background_view"
+        android:layout_alignEnd="@id/lcd_background_view"
+        android:paddingStart="2dp"
+        android:paddingEnd="8dp"
+        android:text="@string/hms_zero" />
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_clockface_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/clock_text_view_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/lcd_background_view"
+        android:layout_alignEnd="@id/lcd_background_view"
+        android:paddingStart="2dp"
+        android:paddingEnd="8dp"
+        android:text="@string/hms_zero" />
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_clockface_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/clock_text_view_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/lcd_background_view"
+        android:layout_alignEnd="@id/lcd_background_view"
+        android:paddingStart="2dp"
+        android:paddingEnd="8dp"
+        android:text="@string/hms_zero" />
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_timer_indicator_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/timer_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/lcd_background_view"
+        android:layout_alignStart="@id/lcd_background_view"
+        android:includeFontPadding="false"/>
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_second_indicator_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/second_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/second_indicator"
+        android:includeFontPadding="false"
+        android:layout_alignBottom="@id/lcd_background_view"
+        android:layout_alignEnd="@id/time_input_seconds"/>
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_minute_indicator_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/minute_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/hms_indicator_margin_end"
+        android:text="@string/minute_indicator"
+        android:includeFontPadding="false"
+        android:layout_alignBottom="@id/lcd_background_view"
+        android:layout_alignEnd="@id/time_input_minutes"/>
+
+    <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
+        style="@style/lcd_screen_hour_indicator_text"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/hour_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/hms_indicator_margin_end"
+        android:text="@string/hour_indicator"
+        android:includeFontPadding="false"
+        android:layout_alignBottom="@id/lcd_background_view"
+        android:layout_alignEnd="@id/time_input_hours" />
+
+    <TextView
+        style="?android:attr/buttonBarButtonStyle"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/hour_background"
+        android:layout_width="@dimen/hour_minute_button_width"
+        android:layout_height="@dimen/hour_minute_button_height"
+        android:layout_marginTop="@dimen/vertical_whitespace_divider"
+        android:layout_marginEnd="16dp"
+        android:layout_below="@id/lcd_background_view"
+        android:gravity="center"
+        android:text="@string/hour_indicator"
+        android:textAlignment="gravity"
+        android:textSize="@dimen/pkt_hour_minute_indicator_size"
+        android:textStyle="bold"
+        android:textColor="@color/text_color"
+        android:background="@drawable/plus_minus_background"/>
+
+    <Button
+        android:id="@+id/hour_minus_button"
+        android:layout_width="64dp"
+        android:layout_height="@dimen/hour_minute_button_height"
+        android:layout_alignStart="@id/hour_background"
+        android:layout_alignTop="@id/hour_background"
+        android:paddingBottom="2dp"
+        android:background="@android:color/transparent"
+        android:text="@string/subtraction_symbol"
+        android:textSize="@dimen/pkt_hour_minute_plus_minus_size"
+        android:textColor="@color/text_color"
+        android:longClickable="true"
+        android:onClick="hourMinus"/>
+
+    <Button
+        android:id="@+id/hour_plus_button"
+        android:layout_width="64dp"
+        android:layout_height="@dimen/hour_minute_button_height"
+        android:layout_alignEnd="@id/hour_background"
+        android:layout_alignTop="@id/hour_background"
+        android:background="@android:color/transparent"
+        android:text="@string/addition_symbol"
+        android:textSize="@dimen/pkt_hour_minute_plus_minus_size"
+        android:textColor="@color/text_color"
+        android:longClickable="true"
+        android:onClick="hourPlus"/>
+
+    <TextView
+        style="?android:attr/buttonBarButtonStyle"
+        android:soundEffectsEnabled="false"
+        android:id="@+id/minute_background"
+        android:layout_width="@dimen/hour_minute_button_width"
+        android:layout_height="@dimen/hour_minute_button_height"
+        android:layout_marginTop="@dimen/vertical_whitespace_divider"
+        android:layout_toEndOf="@id/hour_background"
+        android:layout_below="@id/lcd_background_view"
+        android:gravity="center"
+        android:text="@string/minute_indicator"
+        android:textAlignment="gravity"
+        android:textSize="@dimen/pkt_hour_minute_indicator_size"
+        android:textStyle="bold"
+        android:textColor="@color/text_color"
+        android:background="@drawable/plus_minus_background"/>
+
+    <Button
+        style="?android:attr/buttonBarButtonStyle"
+        android:id="@+id/minute_minus_button"
+        android:layout_width="64dp"
+        android:layout_height="@dimen/hour_minute_button_height"
+        android:layout_alignStart="@id/minute_background"
+        android:layout_alignTop="@id/minute_background"
+        android:background="@android:color/transparent"
+        android:paddingBottom="2dp"
+        android:text="@string/subtraction_symbol"
+        android:textSize="@dimen/pkt_hour_minute_plus_minus_size"
+        android:textColor="@color/text_color"
+        android:longClickable="true"
+        android:onClick="minuteMinus"/>
+
+    <Button
+        style="?android:attr/buttonBarButtonStyle"
+        android:id="@+id/minute_plus_button"
+        android:layout_width="64dp"
+        android:layout_height="@dimen/hour_minute_button_height"
+        android:layout_alignEnd="@id/minute_background"
+        android:layout_alignTop="@id/minute_background"
+        android:background="@android:color/transparent"
+        android:text="@string/addition_symbol"
+        android:textSize="@dimen/pkt_hour_minute_plus_minus_size"
+        android:textColor="@color/text_color"
+        android:longClickable="true"
+        android:onClick="minutePlus"/>
+
+    <Button
+        style="?android:attr/buttonBarButtonStyle"
+        android:id="@+id/start_button"
+        android:layout_width="@dimen/start_stop_button_width"
+        android:layout_height="@dimen/start_stop_button_height"
+        android:layout_below="@id/hour_background"
+        android:layout_marginTop="@dimen/vertical_whitespace_divider"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/start_button_background"
+        android:text="@string/start_button_text"
+        android:textSize="@dimen/pkt_button_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:onClick="startButton"/>
+
+    <Button
+        style="?android:attr/buttonBarButtonStyle"
+        android:id="@+id/stop_button"
+        android:layout_width="@dimen/start_stop_button_width"
+        android:layout_height="@dimen/start_stop_button_height"
+        android:layout_below="@id/hour_background"
+        android:layout_toEndOf="@id/start_button"
+        android:layout_marginTop="@dimen/vertical_whitespace_divider"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/stop_button_background"
+        android:text="@string/stop_button_text"
+        android:textSize="@dimen/pkt_button_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:onClick="stopButton"/>
+
+    <Button
+        style="?android:attr/buttonBarButtonStyle"
+        android:id="@+id/reset_button"
+        android:layout_width="@dimen/reset_button_width"
+        android:layout_height="@dimen/reset_button_height"
+        android:layout_below="@id/minute_background"
+        android:layout_toEndOf="@id/stop_button"
+        android:layout_marginTop="@dimen/vertical_whitespace_divider"
+        android:background="@drawable/clear_button_background"
+        android:text="@string/reset_button_text"
+        android:textSize="@dimen/pkt_button_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:onClick="resetButton"/>
+
+    <ImageView
+        android:soundEffectsEnabled="false"
+        android:id="@+id/ad_unit_background"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ad_background_height"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ad_unit_background" />
+
+    <com.google.android.gms.ads.NativeExpressAdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/ad_unit_background"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/adview_margin_bottom"
+        android:layout_marginTop="@dimen/adview_margin_top"
+        ads:adSize="@string/ad_size"
+        ads:adUnitId="@string/test_ad_unit_id" />
+
+</RelativeLayout>

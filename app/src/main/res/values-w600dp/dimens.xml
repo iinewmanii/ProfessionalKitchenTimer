@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">108dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="ad_background_height">344dp</dimen>
+    <dimen name="adview_margin_bottom">8dp</dimen>
+    <dimen name="adview_margin_top">8dp</dimen>
+</resources>

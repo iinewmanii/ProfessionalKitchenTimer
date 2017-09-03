@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
+        <item name="android:windowBackground">?android:attr/colorBackground</item>
+    </style>
+
+    <style name="lcd_screen_text" parent="android:style/TextAppearance">
+
+        <item name="android:textColor">@color/grey_800</item>
+        <item name="android:shadowColor">#7C8067</item>
+        <item name="android:shadowDx">3</item>
+        <item name="android:shadowDy">3</item>
+        <item name="android:shadowRadius">2</item>
+
+    </style>
+
+    <style name="lcd_screen_clockface_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">68dp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:layout_marginTop">8dp</item>
+
+    </style>
+
+    <style name="lcd_screen_burn_in_text" parent="android:style/TextAppearance">
+
+        <item name="android:textSize">68dp</item>
+
+    </style>
+
+    <style name="lcd_screen_second_indicator_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">19dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+
+    </style>
+
+    <style name="lcd_screen_minute_indicator_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">19dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+
+    </style>
+
+    <style name="lcd_screen_hour_indicator_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">19dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+
+    </style>
+
+    <style name="lcd_screen_timer_indicator_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">19dp</item>
+        <item name="android:layout_marginTop">18dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+
+    </style>
+</resources>

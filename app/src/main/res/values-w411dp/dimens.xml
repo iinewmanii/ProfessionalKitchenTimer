@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="t_switch_button_width">84dp</dimen>
+    <dimen name="t_switch_button_height">64dp</dimen>
+
+    <dimen name="hour_minute_button_width">184dp</dimen>
+    <dimen name="hour_minute_button_height">64dp</dimen>
+
+    <dimen name="start_stop_button_width">132dp</dimen>
+    <dimen name="start_stop_button_height">64dp</dimen>
+
+    <dimen name="reset_button_width">88dp</dimen>
+    <dimen name="reset_button_height">64dp</dimen>
+
+    <dimen name="ad_background_height">116dp</dimen>
+    <dimen name="adview_margin_bottom">4dp</dimen>
+    <dimen name="adview_margin_top">4dp</dimen>
+
+    <dimen name="hms_indicator_margin_end">16dp</dimen>
+
+    <!--Timer Notif Dimens-->
+    <dimen name="timer_notif_image_margin_start_end">8dp</dimen>
+    <dimen name="timer_notif_image_margin_top_bottom">8dp</dimen>
+    <dimen name="timer_notif_image_height_width">48dp</dimen>
+
+    <dimen name="timer_notif_timer_view_height">25dp</dimen>
+    <dimen name="timer_notif_timer_image_view_width">140dp</dimen>
+
+    <dimen name="timer_notif_t_margin_start">0dp</dimen>
+    <dimen name="timer_notif_t_margin_end">8dp</dimen>
+
+    <dimen name="lcd_background_height">138dp</dimen>
+</resources>

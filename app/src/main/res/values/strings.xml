@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name">PKT</string>
+
+    <string name="ad_size">320x80</string>
+
+    <string name="ad_unit_id">ca-app-pub-1936982466468792/3662622668</string>
+
+    <!--<string name="test_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>-->
+
+    <string name="t1_button_text">T1</string>
+
+    <string name="t2_button_text">T2</string>
+
+    <string name="t3_button_text">T3</string>
+
+    <string name="t4_button_text">T4</string>
+
+    <string name="addition_symbol">+</string>
+
+    <string name="subtraction_symbol">-</string>
+
+    <string name="start_button_text">Start</string>
+
+    <string name="stop_button_text">Stop</string>
+
+    <string name="reset_button_text">Reset</string>
+
+    <string name="hour_indicator">H</string>
+
+    <string name="minute_indicator">M</string>
+
+    <string name="second_indicator">S</string>
+
+    <string name="minutes_input_hint">:00</string>
+
+    <string name="hour_input_hint">0</string>
+
+    <string name="hms_zero">0:00:00</string>
+
+    <string name="lcd_burn_in">8:88:88</string>
+
+    <string name="timer_one_indicator">T1</string>
+
+    <string name="timer_two_indicator">T2</string>
+
+    <string name="timer_three_indicator">T3</string>
+
+    <string name="timer_four_indicator">T4</string>
+
+    <string name="timer_notif_timer_one_indicator">Timer 1:</string>
+
+    <string name="timer_notif_timer_two_indicator">Timer 2:</string>
+
+    <string name="timer_notif_timer_three_indicator">Timer 3:</string>
+
+    <string name="timer_notif_timer_four_indicator">Timer 4:</string>
+
+    <string name="reset_all_dialog_message">Do you want to reset all active timers?</string>
+
+    <string name="reset_all_positive_button">Reset</string>
+
+    <string name="reset_all_negative_button">@android:string/cancel</string>
+
+    <string name="alarm_volume_title">Alarm Volume</string>
+
+    <string name="vibrate_title">Vibrate</string>
+
+    <string name="vibrate_body">Vibrate with alarm</string>
+
+    <string name="warning_alarm_title">Warning Alarm</string>
+
+    <string name="warning_alarm_body">Play sound at 5 minutes remaining</string>
+
+    <string name="keep_screen_on_title">Keep Screen On</string>
+
+    <string name="keep_screen_on_warning">WARNING: USES MORE BATTERY</string>
+
+    <string name="About">About</string>
+
+    <string name="Version">Version:</string>
+</resources>

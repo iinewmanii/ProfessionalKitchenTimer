@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#f7efeb</color>
+    <color name="colorPrimaryDark">#d6baae</color>
+    <color name="colorAccent">#7184e3</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="lcd_background_stroke">#6b6b6b</color>
+    <color name="lcd_background_start">#93967a</color>
+    <color name="lcd_background_center">#989c7e</color>
+    <color name="lcd_background_end">#9da182</color>
+    <color name="lcd_burn">#95997C</color>
+    <color name="stop_button_background">#d95757</color>
+    <color name="start_button_background">#518f55</color>
+    <color name="timer_one_finish_notif_background">#fa6664</color>
+    <color name="timer_two_finish_notif_background">#f5e067</color>
+    <color name="timer_three_finish_notif_background">#72c270</color>
+    <color name="timer_four_finish_notif_background">#fca438</color>
+    <color name="text_color">#424242</color>
+</resources>
