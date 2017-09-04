@@ -7,9 +7,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
 //import android.util.Log;
-
-import java.lang.reflect.Method;
-
 import static android.media.AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE;
 
 /**

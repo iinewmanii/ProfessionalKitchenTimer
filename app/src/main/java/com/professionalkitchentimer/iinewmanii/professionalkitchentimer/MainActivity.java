@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         super.onStart();
 //        Log.v(TAG, "onStart");
 
-        timerPreferences = new PrefUtils(this);
+//        timerPreferences = new PrefUtils(this);
 
         minute_plus_button.setOnLongClickListener(this);
         minute_plus_button.setOnTouchListener(this);
@@ -160,6 +160,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     public void onResume() {
         super.onResume();
 //        Log.v(TAG, "onResume");
+
+        timerPreferences = new PrefUtils(this);
 
         boolean keepScreenOn = timerPreferences.getKeepScreenOn();
 
@@ -642,6 +644,14 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     }
 
     public void minutePlus(View minute_plus_button) {
+        if (timerMinute == 59) {
+            timerMinute = 0;
+            inputMinutes.setText(String.format(Locale.ENGLISH, ":%02d", timerMinute));
+
+            timerHour = timerHour + 1;
+            inputHours.setText(String.format(Locale.ENGLISH, "%01d", timerHour));
+        }
+
         if (timerMinute < 59) {
 //            Log.v(TAG, "Minute Plus");
             timerMinute = timerMinute + 1;
@@ -650,6 +660,15 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     }
 
     public void minuteMinus(View minute_minus_button) {
+        if (timerMinute == 0 && timerHour > 0) {
+            timerHour = timerHour - 1;
+            inputHours.setText(String.format(Locale.ENGLISH, "%01d", timerHour));
+
+            timerMinute = 59;
+            inputMinutes.setText(String.format(Locale.ENGLISH, ":%02d", timerMinute));
+
+        }
+
         if (timerMinute > 0) {
 //            Log.v(TAG, "Minute Minus");
             timerMinute = timerMinute - 1;
@@ -1197,13 +1216,11 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
     private class RptMinuteUpdater implements Runnable {
         public void run() {
-            if (mAutoIncrement && timerMinute < 59) {
-                timerMinute = timerMinute + 1;
-                inputMinutes.setText(String.format(Locale.ENGLISH, ":%02d", timerMinute));
+            if (mAutoIncrement) {
+                minutePlus(minute_plus_button);
                 repeatMinuteHandler.postDelayed(new RptMinuteUpdater(), REP_DELAY);
-            } else if (mAutoDecrement && timerMinute > 0) {
-                timerMinute = timerMinute - 1;
-                inputMinutes.setText(String.format(Locale.ENGLISH, ":%02d", timerMinute));
+            } else if (mAutoDecrement) {
+                minuteMinus(minute_minus_button);
                 repeatMinuteHandler.postDelayed(new RptMinuteUpdater(), REP_DELAY);
             }
         }

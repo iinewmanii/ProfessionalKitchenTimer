@@ -50,6 +50,7 @@ class PrefUtils {
     private static final String TIMER_NOTIFICATION_RUNNING = "timerNotificationRunning";
     private static final String ORIGINAL_NOTIFICATION_VOLUME = "originalNotificationVolume";
     private static final String ALARM_VOLUME = "alarmVolume";
+    private static final String WARNING_ALARM_MINUTE = "warningAlarmMinute";
     private static final String WARNING_ALARM = "warningAlarm";
     private static final String VIBRATE_SETTING = "vibrateSetting";
     private static final String KEEP_SCREEN_ON = "keepScreenOn";
@@ -81,6 +82,14 @@ class PrefUtils {
     void setWarningAlarm(boolean warningAlarm) {
         SharedPreferences.Editor editor = timerPreferences.edit();
         editor.putBoolean(WARNING_ALARM, warningAlarm);
+        editor.apply();
+    }
+
+    int getWarningAlarmminute() {return timerPreferences.getInt(WARNING_ALARM_MINUTE, 5);}
+
+    void setWarningAlarmMinute(int warningAlarmMinute) {
+        SharedPreferences.Editor editor = timerPreferences.edit();
+        editor.putInt(WARNING_ALARM_MINUTE, warningAlarmMinute);
         editor.apply();
     }
 

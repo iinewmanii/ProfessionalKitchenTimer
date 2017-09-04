@@ -38,9 +38,12 @@ public class AppPreferenceActivity extends PreferenceActivity {
 
         private static final int minValue = 1;
         private int alarmVolume;
+        private int warningAlarmMinute;
         private TextView seekBarValue;
+        private TextView warningAlarmSeekBarValue;
         private TextView versionNumberText;
         private SeekBar alarmVolumeSeekBar;
+        private SeekBar warningAlarmVolumeSeekBar;
         private AudioManager audioManager;
         private CheckBox keepScreenOnCheckbox;
         private CheckBox vibrateCheckbox;
@@ -62,20 +65,28 @@ public class AppPreferenceActivity extends PreferenceActivity {
             View preferenceView = inflater.inflate(R.layout.preferences, container, false);
 
             alarmVolumeSeekBar = (SeekBar) preferenceView.findViewById(R.id.alarm_volume_seek_bar);
+            warningAlarmVolumeSeekBar = (SeekBar) preferenceView.findViewById(R.id.warning_alarm_volume_seek_bar);
             audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
             seekBarValue = (TextView) preferenceView.findViewById(R.id.seek_bar_value);
+            warningAlarmSeekBarValue = (TextView) preferenceView.findViewById(R.id.warning_alarm_value);
             versionNumberText = (TextView) preferenceView.findViewById(R.id.version_number);
             keepScreenOnCheckbox = (CheckBox) preferenceView.findViewById(R.id.keep_screen_on_checkbox);
             vibrateCheckbox = (CheckBox) preferenceView.findViewById(R.id.vibrate_checkbox);
             warningAlarmCheckbox = (CheckBox) preferenceView.findViewById(R.id.warning_alarm_checkbox);
 
             alarmVolume = timerPreferences.getAlarmVolume();
+            warningAlarmMinute = timerPreferences.getWarningAlarmminute();
 
             alarmVolumeSeekBar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
             alarmVolumeSeekBar.setProgress(alarmVolume);
             seekBarValue.setText(String.valueOf(alarmVolume));
 
+            warningAlarmVolumeSeekBar.setMax(30);
+            warningAlarmVolumeSeekBar.setProgress(warningAlarmMinute);
+            warningAlarmSeekBarValue.setText(String.valueOf(warningAlarmMinute));
+
             alarmVolumeSeekBar.setOnSeekBarChangeListener(this);
+            warningAlarmVolumeSeekBar.setOnSeekBarChangeListener(this);
             keepScreenOnCheckbox.setOnCheckedChangeListener(this);
             vibrateCheckbox.setOnCheckedChangeListener(this);
             warningAlarmCheckbox.setOnCheckedChangeListener(this);
@@ -118,12 +129,23 @@ public class AppPreferenceActivity extends PreferenceActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 //            Log.v(TAG, "Progress Changed");
-            alarmVolume = progress;
-            if (alarmVolume < minValue) {
-                alarmVolume = minValue;
+
+            if (seekBar == alarmVolumeSeekBar) {
+                alarmVolume = progress;
+                if (alarmVolume < minValue) {
+                    alarmVolume = minValue;
+                }
+
+                alarmVolumeSeekBar.setProgress(alarmVolume);
+                seekBarValue.setText(String.valueOf(alarmVolume));
             }
-            alarmVolumeSeekBar.setProgress(alarmVolume);
-            seekBarValue.setText(String.valueOf(alarmVolume));
+
+            if (seekBar == warningAlarmVolumeSeekBar) {
+                warningAlarmMinute = progress;
+
+                warningAlarmVolumeSeekBar.setProgress(warningAlarmMinute);
+                warningAlarmSeekBarValue.setText(String.valueOf(warningAlarmMinute));
+            }
         }
 
         @Override
@@ -135,7 +157,13 @@ public class AppPreferenceActivity extends PreferenceActivity {
         public void onStopTrackingTouch(SeekBar seekBar) {
 //            Log.v(TAG, "Stop Tracking Touch");
 
-            timerPreferences.setAlarmVolume(alarmVolume);
+            if (seekBar == alarmVolumeSeekBar) {
+                timerPreferences.setAlarmVolume(alarmVolume);
+            }
+
+            if (seekBar == warningAlarmVolumeSeekBar) {
+                timerPreferences.setWarningAlarmMinute(warningAlarmMinute);
+            }
         }
 
         @Override

@@ -69,7 +69,9 @@
 
     <string name="warning_alarm_title">Warning Alarm</string>
 
-    <string name="warning_alarm_body">Play sound at 5 minutes remaining</string>
+    <string name="warning_alarm_body_start">Play sound at</string>
+
+    <string name="warning_alarm_body_end">minutes remaining</string>
 
     <string name="keep_screen_on_title">Keep Screen On</string>
 
