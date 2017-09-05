@@ -52,7 +52,7 @@ public class TimerNotifyService extends Service {
 
     private static final String PACKAGE_NAME = "com.professionalkitchentimer.iinewmanii.professionalkitchentimer";
 
-    boolean timerNotificationRunning;
+    private boolean timerNotificationRunning;
     private boolean timerPaused;
     private boolean timerTwoPaused;
     private boolean timerThreePaused;

@@ -85,7 +85,7 @@ class PrefUtils {
         editor.apply();
     }
 
-    int getWarningAlarmminute() {return timerPreferences.getInt(WARNING_ALARM_MINUTE, 5);}
+    int getWarningAlarmMinute() {return timerPreferences.getInt(WARNING_ALARM_MINUTE, 5);}
 
     void setWarningAlarmMinute(int warningAlarmMinute) {
         SharedPreferences.Editor editor = timerPreferences.edit();

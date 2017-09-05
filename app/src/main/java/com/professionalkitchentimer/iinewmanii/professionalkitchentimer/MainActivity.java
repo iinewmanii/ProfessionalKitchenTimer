@@ -34,17 +34,17 @@ import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
 import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;
 import static android.media.AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE;
 
-//import android.util.Log;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements View.OnLongClickListener, View.OnTouchListener {
 
     private static final int REP_DELAY = 125;
     private static final int countdownInterval = 125;
-    private static final int warningAlarmStart = 301000;
-    private static final int warningAlarmEnd = 300000;
+    private static int warningAlarmStart;
+    private static int warningAlarmEnd;
     private final Handler repeatMinuteHandler = new Handler();
     private final Handler resetAllHandler = new Handler();
-//    private static final String TAG = "NEWMAN";
+    private static final String TAG = "NEWMAN";
     private Button minute_plus_button,
             minute_minus_button,
             start_button,
@@ -195,6 +195,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         timerFourRunning = timerPreferences.getTimerFourRunning();
         timerNotificationRunning = timerPreferences.getTimerNotificationRunning();
         timerWarning = timerPreferences.getWarningAlarm();
+        warningAlarmEnd = timerPreferences.getWarningAlarmMinute() * 60000;
+        warningAlarmStart = warningAlarmEnd + 1000;
 
 //        Log.v(TAG, "timerRunning = " + timerRunning);
 
@@ -1036,33 +1038,31 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     }
 
     private void playWarningAlarm() {
-        if (timerWarning) {
-//            Log.v(TAG, "Play warning alarm");
+//        Log.v(TAG, "Play warning alarm");
 
-            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-            boolean vibrateSetting = timerPreferences.getVibrateSetting();
-            final int volume = timerPreferences.getAlarmVolume();
-            setVolumeControlStream(AudioManager.STREAM_MUSIC);
-            originalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        boolean vibrateSetting = timerPreferences.getVibrateSetting();
+        final int volume = timerPreferences.getAlarmVolume();
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        originalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
-            afChangeListener = new MainActOnAudioFocusChangeListener(volume);
+        afChangeListener = new MainActOnAudioFocusChangeListener(volume);
 
-            int result = audioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+        int result = audioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
-            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, FLAG_REMOVE_SOUND_AND_VIBRATE);
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, FLAG_REMOVE_SOUND_AND_VIBRATE);
 
-                alarmPlayer = MediaPlayer.create(this, R.raw.alarm_clock_short);
-                alarmPlayer.setOnCompletionListener(new WarningAlarmCompletionListener());
-                alarmPlayer.start();
+            alarmPlayer = MediaPlayer.create(this, R.raw.alarm_clock_short);
+            alarmPlayer.setOnCompletionListener(new WarningAlarmCompletionListener());
+            alarmPlayer.start();
 
-                if (vibrator.hasVibrator() && vibrateSetting) {
-                    vibrator.vibrate(800);
-                }
+            if (vibrator.hasVibrator() && vibrateSetting) {
+                vibrator.vibrate(800);
             }
         }
     }
@@ -1097,7 +1097,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         wakeUpTimeThree = timerPreferences.getStartTimeThree() + millisToCountThree;
         wakeUpTimeFour = timerPreferences.getStartTimeFour() + millisToCountFour;
 
-//        Log.v(TAG, "SAM millisToCount = " + millisToCount);
+        Log.v(TAG, "SAM millisToCount = " + millisToCount);
+        Log.v(TAG, "SAM pausedTime = " + pausedTime);
 
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
@@ -1110,7 +1111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             am.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeUpTime, sender), sender);
 //            Log.v(TAG, "Alarm Manager Set");
 
-            if (timerWarning && millisToCount > warningAlarmStart) {
+            if (timerWarning && pausedTime > warningAlarmStart) {
                 long warningTime = wakeUpTime - warningAlarmStart;
                 warningIntent.putExtra("playWarningAlarm", true);
                 PendingIntent warningSender = PendingIntent.getBroadcast(this, 1, warningIntent, 0);
@@ -1124,7 +1125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             am.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeUpTimeTwo, senderTwo), senderTwo);
 //            Log.v(TAG, "Alarm Manager Two Set");
 
-            if (timerWarning && millisToCountTwo > warningAlarmStart) {
+            if (timerWarning && pausedTimeTwo > warningAlarmStart) {
                 long warningTimeTwo = wakeUpTimeTwo - warningAlarmStart;
                 warningIntent.putExtra("playWarningAlarm", true);
                 PendingIntent warningSenderTwo = PendingIntent.getBroadcast(this, 2, warningIntent, 0);
@@ -1138,7 +1139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             am.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeUpTimeThree, senderThree), senderThree);
 //            Log.v(TAG, "Alarm Manager Three Set");
 
-            if (timerWarning && millisToCountThree > warningAlarmStart) {
+            if (timerWarning && pausedTimeThree > warningAlarmStart) {
                 long warningTimeThree = wakeUpTimeThree - warningAlarmStart;
                 warningIntent.putExtra("playWarningAlarm", true);
                 PendingIntent warningSenderThree = PendingIntent.getBroadcast(this, 3, warningIntent, 0);
@@ -1152,7 +1153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             am.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeUpTimeFour, senderFour), senderFour);
 //            Log.v(TAG, "Alarm Manager Four Set");
 
-            if (timerWarning && millisToCountFour > warningAlarmStart) {
+            if (timerWarning && pausedTimeFour > warningAlarmStart) {
                 long warningTimeFour = wakeUpTimeFour - warningAlarmStart;
                 warningIntent.putExtra("playWarningAlarm", true);
                 PendingIntent warningSenderFour = PendingIntent.getBroadcast(this, 4, warningIntent, 0);
@@ -1329,14 +1330,13 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 clockView4.setText(hms);
             }
 
-            if (timerWarning) {
-                if ((pausedTime < warningAlarmStart && pausedTime > warningAlarmEnd) ||
-                        (pausedTimeTwo < warningAlarmStart && pausedTimeTwo > warningAlarmEnd) ||
-                        (pausedTimeThree < warningAlarmStart && pausedTimeThree > warningAlarmEnd) ||
-                        (pausedTimeFour < warningAlarmStart && pausedTimeFour > warningAlarmEnd)) {
-                    playWarningAlarm();
-                    timerWarning = false;
-                }
+            if ((pausedTime < warningAlarmStart && pausedTime > warningAlarmEnd) ||
+                    (pausedTimeTwo < warningAlarmStart && pausedTimeTwo > warningAlarmEnd) ||
+                    (pausedTimeThree < warningAlarmStart && pausedTimeThree > warningAlarmEnd) ||
+                    (pausedTimeFour < warningAlarmStart && pausedTimeFour > warningAlarmEnd)) {
+                playWarningAlarm();
+                Log.v(TAG, "onTick playWarningAlarm");
+                timerWarning = false;
             }
         }
 

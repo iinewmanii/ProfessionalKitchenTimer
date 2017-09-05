@@ -75,7 +75,7 @@ public class AppPreferenceActivity extends PreferenceActivity {
             warningAlarmCheckbox = (CheckBox) preferenceView.findViewById(R.id.warning_alarm_checkbox);
 
             alarmVolume = timerPreferences.getAlarmVolume();
-            warningAlarmMinute = timerPreferences.getWarningAlarmminute();
+            warningAlarmMinute = timerPreferences.getWarningAlarmMinute();
 
             alarmVolumeSeekBar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
             alarmVolumeSeekBar.setProgress(alarmVolume);
