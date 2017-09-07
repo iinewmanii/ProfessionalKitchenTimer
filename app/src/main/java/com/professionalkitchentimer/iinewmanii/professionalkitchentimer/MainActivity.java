@@ -34,7 +34,7 @@ import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
 import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;
 import static android.media.AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE;
 
-import android.util.Log;
+//import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements View.OnLongClickListener, View.OnTouchListener {
 
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     private static int warningAlarmEnd;
     private final Handler repeatMinuteHandler = new Handler();
     private final Handler resetAllHandler = new Handler();
-    private static final String TAG = "NEWMAN";
+//    private static final String TAG = "NEWMAN";
     private Button minute_plus_button,
             minute_minus_button,
             start_button,
@@ -1097,8 +1097,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         wakeUpTimeThree = timerPreferences.getStartTimeThree() + millisToCountThree;
         wakeUpTimeFour = timerPreferences.getStartTimeFour() + millisToCountFour;
 
-        Log.v(TAG, "SAM millisToCount = " + millisToCount);
-        Log.v(TAG, "SAM pausedTime = " + pausedTime);
+//        Log.v(TAG, "SAM millisToCount = " + millisToCount);
+//        Log.v(TAG, "SAM pausedTime = " + pausedTime);
 
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
@@ -1162,6 +1162,9 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         }
     }
 
+    /**
+     * Removes alarms in alarm manager when onResume is called
+     */
     private void removeAlarmManager() {
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
@@ -1215,6 +1218,9 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 //        Log.v(TAG, "Alarms Removed");
     }
 
+    /**
+     * Runnable to provide rapid input of minutes
+     */
     private class RptMinuteUpdater implements Runnable {
         public void run() {
             if (mAutoIncrement) {
@@ -1335,7 +1341,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                     (pausedTimeThree < warningAlarmStart && pausedTimeThree > warningAlarmEnd) ||
                     (pausedTimeFour < warningAlarmStart && pausedTimeFour > warningAlarmEnd)) {
                 playWarningAlarm();
-                Log.v(TAG, "onTick playWarningAlarm");
+//                Log.v(TAG, "onTick playWarningAlarm");
                 timerWarning = false;
             }
         }

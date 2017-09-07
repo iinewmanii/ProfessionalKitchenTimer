@@ -18,8 +18,6 @@ public class WarningAlarmReceiver extends BroadcastReceiver {
 
 //    private final static String TAG = "NEWMAN";
 
-    private PrefUtils timerPreferences;
-
     private AudioManager audioManager;
 
     private MediaPlayer mediaPlayer;
@@ -42,7 +40,7 @@ public class WarningAlarmReceiver extends BroadcastReceiver {
  * Method to play a warning alarm and vibrate
 */
     private void playWarningAlarm(Context context) {
-        timerPreferences = new PrefUtils(context);
+        PrefUtils timerPreferences = new PrefUtils(context);
 
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
