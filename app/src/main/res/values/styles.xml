@@ -1,0 +1,71 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
+        <item name="android:windowBackground">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="lcd_screen_text" parent="android:style/TextAppearance">
+
+        <item name="android:textColor">@color/grey_800</item>
+        <item name="android:shadowColor">#7C8067</item>
+        <item name="android:shadowDx">@dimen/lcd_screen_text_shadow_x</item>
+        <item name="android:shadowDy">@dimen/lcd_screen_text_shadow_y</item>
+        <item name="android:shadowRadius">@dimen/lcd_screen_text_shadow_radius</item>
+
+    </style>
+
+    <style name="lcd_screen_clockface_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">@dimen/lcd_screen_clockface_text_size</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingTop">@dimen/lcd_screen_clockface_padding_top</item>
+
+    </style>
+
+    <style name="lcd_screen_burn_in_text" parent="android:style/TextAppearance">
+
+        <item name="android:textSize">@dimen/lcd_screen_clockface_text_size</item>
+
+    </style>
+
+    <style name="lcd_screen_second_indicator_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">@dimen/lcd_screen_indicator_text_size</item>
+        <item name="android:layout_marginBottom">@dimen/lcd_screen_indicator_margin_bottom</item>
+        <item name="android:layout_marginEnd">@dimen/lcd_screen_indicator_margin_end</item>
+
+    </style>
+
+    <style name="lcd_screen_minute_indicator_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">@dimen/lcd_screen_indicator_text_size</item>
+        <item name="android:layout_marginBottom">@dimen/lcd_screen_indicator_margin_bottom</item>
+        <item name="android:layout_marginEnd">@dimen/lcd_screen_indicator_margin_end</item>
+
+    </style>
+
+    <style name="lcd_screen_hour_indicator_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">@dimen/lcd_screen_indicator_text_size</item>
+        <item name="android:layout_marginBottom">@dimen/lcd_screen_indicator_margin_bottom</item>
+        <item name="android:layout_marginEnd">@dimen/lcd_screen_indicator_margin_end</item>
+
+    </style>
+
+    <style name="lcd_screen_timer_indicator_text" parent="@style/lcd_screen_text">
+
+        <item name="android:textSize">@dimen/lcd_screen_indicator_text_size</item>
+        <item name="android:layout_marginTop">@dimen/lcd_screen_timer_indicator_margin_top</item>
+        <item name="android:layout_marginLeft">@dimen/lcd_screen_timer_indicator_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/lcd_screen_timer_indicator_margin_right</item>
+
+    </style>
+
+</resources>

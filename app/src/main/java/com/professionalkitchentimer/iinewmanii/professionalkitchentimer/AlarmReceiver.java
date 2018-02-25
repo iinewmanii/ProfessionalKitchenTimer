@@ -1,0 +1,211 @@
+package com.professionalkitchentimer.iinewmanii.professionalkitchentimer;
+
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.media.AudioManager;
+import android.net.Uri;
+import android.os.Build;
+import android.service.notification.StatusBarNotification;
+import android.support.v4.app.NotificationCompat;
+
+import static android.support.v4.app.NotificationCompat.CATEGORY_ALARM;
+//import android.util.Log;
+
+/**
+ * Created by IINEWMANII on 2/10/2017.
+ * Receive broadcast from alarm manager and build alarm notification.
+ */
+
+public class AlarmReceiver extends BroadcastReceiver {
+
+    //    private static final String TAG = "NEWMAN";
+    private static final String ALARM_NOTIFICATION_GROUP_KEY = "ALARM_NOTIFICATION";
+    private static final String NOTIFICATION_DELETED_ACTION = "NOTIFICATION_DELETED";
+    private static final String CREATE_NOTIFICATION_ACTION = "CREATE_NOTIFICATION";
+    private PrefUtils timerPreferences;
+    private AudioManager audioManager;
+    private final int timerNotificationSummaryColor = Color.rgb(113, 132, 227);
+    private final int timerOneNotifColor = Color.rgb(239, 82, 79);
+    private final int timerTwoNotifColor = Color.rgb(250, 225, 85);
+    private final int timerThreeNotifColor = Color.rgb(94, 171, 92);
+    private final int timerFourNotifColor = Color.rgb(250, 150, 27);
+    private final int timerOneLightColor = Color.rgb(255, 0, 0);
+    private final int timerTwoLightColor = Color.rgb(255, 255, 0);
+    private final int timerThreeLightColor = Color.rgb(0, 255, 0);
+    private final int timerFourLightColor = Color.rgb(255, 55, 0);
+    private int originalNotificationVolume;
+    private final long pattern[] = {200, 500, 500};
+
+    /**
+     * When broadcast is received determine which timer sent the broadcast
+     * Then call alarmNotification and set the proper object values
+     */
+    @Override
+    public void onReceive(Context context, Intent intent) {
+
+        timerPreferences = new PrefUtils(context);
+
+        String action = intent.getAction();
+
+        if (action.equals(CREATE_NOTIFICATION_ACTION)) {
+            int timerNumberId = intent.getIntExtra("timerNumberId", 0);
+
+            Intent timerNotifIntent = new Intent(context, TimerNotifyService.class);
+            context.stopService(timerNotifIntent);
+
+            switch (timerNumberId) {
+                case 1:
+                    alarmNotification(timerNumberId, context, timerOneNotifColor, timerOneLightColor, intent);
+                    timerPreferences.setTimerOneState(MainActivity.INPUT);
+                    timerPreferences.setStartTime(0);
+                    timerPreferences.setOriginalTime(0);
+                    timerPreferences.setPausedTime(0);
+                    break;
+
+                case 2:
+                    alarmNotification(timerNumberId, context, timerTwoNotifColor, timerTwoLightColor, intent);
+                    timerPreferences.setTimerTwoState(MainActivity.INPUT);
+                    timerPreferences.setStartTimeTwo(0);
+                    timerPreferences.setOriginalTimeTwo(0);
+                    timerPreferences.setPausedTimeTwo(0);
+                    break;
+
+                case 3:
+                    alarmNotification(timerNumberId, context, timerThreeNotifColor, timerThreeLightColor, intent);
+                    timerPreferences.setTimerThreeState(MainActivity.INPUT);
+                    timerPreferences.setStartTimeThree(0);
+                    timerPreferences.setOriginalTimeThree(0);
+                    timerPreferences.setPausedTimeThree(0);
+                    break;
+
+                case 4:
+                    alarmNotification(timerNumberId, context, timerFourNotifColor, timerFourLightColor, intent);
+                    timerPreferences.setTimerFourState(MainActivity.INPUT);
+                    timerPreferences.setStartTimeFour(0);
+                    timerPreferences.setOriginalTimeFour(0);
+                    timerPreferences.setPausedTimeFour(0);
+                    break;
+
+                default:
+                    break;
+            }
+        } else if (action.equals(NOTIFICATION_DELETED_ACTION)) {
+            long millisToCount = timerPreferences.getOriginalTime();
+            long millisToCountTwo = timerPreferences.getOriginalTimeTwo();
+            long millisToCountThree = timerPreferences.getOriginalTimeThree();
+            long millisToCountFour = timerPreferences.getOriginalTimeFour();
+
+            audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            originalNotificationVolume = timerPreferences.getOriginalNotificationVolume();
+            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalNotificationVolume, 0);
+
+            if ((millisToCount | millisToCountTwo | millisToCountThree | millisToCountFour) > 0) {
+                Intent timerNotifIntent = new Intent(context, TimerNotifyService.class);
+                context.startService(timerNotifIntent);
+            }
+        }
+    }
+
+    /**
+     * Builds a notification for an alarm and displays it in the notification tray
+     */
+    private void alarmNotification(int timerNumber, Context context, int notifColor, int lightColor, Intent intent) {
+
+        int timerNumberId = intent.getIntExtra("timerNumberId", 0);
+        int alarmVolume = timerPreferences.getAlarmVolume();
+        boolean vibrateSetting = timerPreferences.getVibrateSetting();
+
+//        Log.v(TAG, "alarmVolume = " + alarmVolume);
+
+        Uri notification = Uri.parse("android.resource://" + "com.professionalkitchentimer.iinewmanii.professionalkitchentimer"
+                + '/' + R.raw.alarm_clock_short);
+
+        audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (audioManager != null) {
+            originalNotificationVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        }
+        timerPreferences.setOriginalNotificationVolume(originalNotificationVolume);
+        timerPreferences.setTimerNotificationAlarm(true);
+        audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, alarmVolume, 0);
+
+        /* Create Intents for when the user taps on a notification and deletes notification */
+        Intent alarmTappedIntent = new Intent(context, MainActivity.class);
+        alarmTappedIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent senderTapped = PendingIntent.getActivity(context, timerNumber, alarmTappedIntent, 0);
+
+        Intent alarmSwipedIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
+        alarmSwipedIntent.setAction(NOTIFICATION_DELETED_ACTION);
+        PendingIntent senderSwiped = PendingIntent.getBroadcast(context.getApplicationContext(), 0, alarmSwipedIntent, 0);
+
+        /* Create alarm notification */
+        NotificationCompat.Builder timerNotificationBuilder = new NotificationCompat.Builder(context);
+
+        int lightFlashingInterval = 500;
+        timerNotificationBuilder.setPriority(Notification.PRIORITY_HIGH)
+                .setColor(notifColor)
+                .setSound(notification)
+                .setLights(lightColor, lightFlashingInterval, lightFlashingInterval)
+                .setContentTitle("Timer " + timerNumber + " has finished")
+                .setContentText("Swipe or Tap to cancel alarm")
+                .setContentIntent(senderTapped)
+                .setCategory(CATEGORY_ALARM)
+                .setGroup(ALARM_NOTIFICATION_GROUP_KEY)
+                .setSmallIcon(R.drawable.ic_pkt_alarm)
+                .setWhen(System.currentTimeMillis())
+                .setShowWhen(true)
+                .setAutoCancel(false)
+                .setDeleteIntent(senderSwiped);
+
+        if (vibrateSetting) {
+            timerNotificationBuilder.setVibrate(pattern);
+        }
+
+        Notification timerNotification = timerNotificationBuilder.build();
+        timerNotification.flags |= Notification.FLAG_INSISTENT;
+        NotificationManager alarmNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (alarmNotificationManager != null) {
+            alarmNotificationManager.notify(timerNumberId, timerNotification);
+        }
+
+        /* Create summary notification */
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            StatusBarNotification[] activeNotifications = alarmNotificationManager.getActiveNotifications();
+
+            int numberOfNotifications = activeNotifications.length;
+
+            if (numberOfNotifications > 1) {
+                NotificationCompat.Builder summaryNotificationBuilder = new NotificationCompat.Builder(context);
+
+                summaryNotificationBuilder.setSmallIcon(R.drawable.ic_pkt_alarm)
+                        .setColor(timerNotificationSummaryColor)
+                        .setContentTitle("Multiple alarms have finished!")
+                        .setContentText("PKT")
+                        .setContentIntent(senderTapped)
+                        .setSound(notification)
+                        .setGroup(ALARM_NOTIFICATION_GROUP_KEY)
+                        .setGroupSummary(true)
+                        .setAutoCancel(true)
+                        .setDeleteIntent(senderSwiped);
+
+                if (vibrateSetting) {
+                    summaryNotificationBuilder.setVibrate(pattern);
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    summaryNotificationBuilder.setCategory(CATEGORY_ALARM);
+                }
+
+                Notification summaryNotification = summaryNotificationBuilder.build();
+                summaryNotification.flags |= Notification.FLAG_INSISTENT;
+                int summaryId = 0;
+                alarmNotificationManager.notify(summaryId, summaryNotification);
+            }
+        }
+
+    }
+}

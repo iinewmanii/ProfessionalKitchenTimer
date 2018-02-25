@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--PKT Layout-->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="pkt_button_text_size">20dp</dimen>
+    <dimen name="pkt_button_height">64dp</dimen>
+    <dimen name="pkt_hour_minute_indicator_size">18dp</dimen>
+    <dimen name="pkt_hour_minute_plus_minus_size">28dp</dimen>
+
+    <dimen name="pkt_header_height">31dp</dimen>
+    <dimen name="pkt_header_width">279dp</dimen>
+    <dimen name="pkt_header_margin_top">4dp</dimen>
+
+    <dimen name="pkt_settings_button_size">26dp</dimen>
+
+    <dimen name="t_switch_button_width">70dp</dimen>
+
+    <dimen name="t_switch_color_indicator_size">16dp</dimen>
+
+    <dimen name="hour_minute_width">156dp</dimen>
+
+    <dimen name="hour_minute_button_width">64dp</dimen>
+
+    <dimen name="hms_indicator_margin_end">16dp</dimen>
+
+    <dimen name="start_stop_button_width">111dp</dimen>
+
+    <dimen name="reset_button_width">74dp</dimen>
+
+    <dimen name="lcd_background_height">120dp</dimen>
+    <dimen name="vertical_whitespace_divider">16dp</dimen>
+
+    <!--Dimens for lcd screen-->
+    <dimen name="lcd_screen_text_shadow_x">4</dimen>
+    <dimen name="lcd_screen_text_shadow_y">4</dimen>
+    <dimen name="lcd_screen_text_shadow_radius">3</dimen>
+
+    <dimen name="lcd_screen_clockface_text_size">78dp</dimen>
+    <dimen name="lcd_screen_clockface_padding_top">8dp</dimen>
+
+    <dimen name="lcd_screen_indicator_text_size">22dp</dimen>
+    <dimen name="lcd_screen_indicator_margin_bottom">16dp</dimen>
+    <dimen name="lcd_screen_indicator_margin_end">16dp</dimen>
+
+    <dimen name="lcd_screen_timer_indicator_margin_left">16dp</dimen>
+    <dimen name="lcd_screen_timer_indicator_margin_top">18dp</dimen>
+    <dimen name="lcd_screen_timer_indicator_margin_right">0dp</dimen>
+
+    <!--Preferences Screen-->
+    <dimen name="settings_header_height">32dp</dimen>
+    <dimen name="settings_header_width">82dp</dimen>
+
+    <!--Timer Notif Dimens-->
+    <dimen name="timer_notif_image_margin_start_end">4dp</dimen>
+    <dimen name="timer_notif_image_margin_top_bottom">8dp</dimen>
+    <dimen name="timer_notif_image_height_width">48dp</dimen>
+
+    <dimen name="timer_notif_timer_view_height">25dp</dimen>
+    <dimen name="timer_notif_timer_image_view_width">140dp</dimen>
+
+    <dimen name="timer_notif_timer_indicator_margin_start">7dp</dimen>
+    <dimen name="timer_notif_timer_indicator_margin_end">0dp</dimen>
+
+    <dimen name="timer_notif_t_margin_start">0dp</dimen>
+    <dimen name="timer_notif_t_margin_end">4dp</dimen>
+
+    <dimen name="timer_notification_text_size">17dp</dimen>
+
+    <!--Adview-->
+    <!--<dimen name="ad_background_height">96dp</dimen>-->
+    <!--<dimen name="adview_margin_bottom">4dp</dimen>-->
+    <!--<dimen name="adview_margin_top">4dp</dimen>-->
+
+</resources>

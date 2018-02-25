@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.professionalkitchentimer.iinewmanii.professionalkitchentimer"
+    android:installLocation="preferExternal">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_pkt_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_pkt_launcher" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
+        <meta-data
+            android:name="android.max_aspect" android:value="2.1"/>
+
+        <activity android:name="com.professionalkitchentimer.iinewmanii.professionalkitchentimer.MainActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.professionalkitchentimer.iinewmanii.professionalkitchentimer.AppPreferenceActivity" android:screenOrientation="portrait"
+            android:parentActivityName="com.professionalkitchentimer.iinewmanii.professionalkitchentimer.MainActivity"/>
+
+        <receiver android:name="com.professionalkitchentimer.iinewmanii.professionalkitchentimer.AlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="NOTIFICATION_DELETED"/>
+                <action android:name="CREATE_NOTIFICATION"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="com.professionalkitchentimer.iinewmanii.professionalkitchentimer.WarningAlarmReceiver"/>
+
+        <service android:name="com.professionalkitchentimer.iinewmanii.professionalkitchentimer.TimerNotifyService" android:exported="false"/>
+
+        <service
+            android:name=".MyFirebaseMessagingService" android:enabled="true" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>

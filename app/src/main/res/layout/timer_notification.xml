@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp">
+
+    <ImageView
+        android:id="@+id/notification_logo"
+        android:layout_width="@dimen/timer_notif_image_height_width"
+        android:layout_height="@dimen/timer_notif_image_height_width"
+        android:layout_marginTop="@dimen/timer_notif_image_margin_top_bottom"
+        android:layout_marginBottom="@dimen/timer_notif_image_margin_top_bottom"
+        android:layout_marginStart="@dimen/timer_notif_image_margin_start_end"
+        android:layout_marginEnd="@dimen/timer_notif_image_margin_start_end"
+        android:src="@mipmap/ic_pkt_launcher"/>
+
+    <ImageView
+        android:id="@+id/timer_one_notification_view_bg"
+        android:layout_width="@dimen/timer_notif_timer_image_view_width"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@id/notification_logo"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="@dimen/timer_notif_t_margin_start"
+        android:layout_marginEnd="@dimen/timer_notif_t_margin_end"
+        android:background="@drawable/timer_one_notif_background"/>
+
+    <ImageView
+        android:id="@+id/timer_two_notification_view_bg"
+        android:layout_width="@dimen/timer_notif_timer_image_view_width"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@id/timer_one_notification_view_bg"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="@dimen/timer_notif_t_margin_start"
+        android:layout_marginEnd="@dimen/timer_notif_t_margin_end"
+        android:background="@drawable/timer_two_notif_background"/>
+
+    <ImageView
+        android:id="@+id/timer_three_notification_view_bg"
+        android:layout_width="@dimen/timer_notif_timer_image_view_width"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_toEndOf="@id/notification_logo"
+        android:layout_below="@id/timer_one_notification_view_bg"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="@dimen/timer_notif_t_margin_start"
+        android:layout_marginEnd="@dimen/timer_notif_t_margin_end"
+        android:background="@drawable/timer_three_notif_background"/>
+
+    <ImageView
+        android:id="@+id/timer_four_notification_view_bg"
+        android:layout_width="@dimen/timer_notif_timer_image_view_width"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_toEndOf="@id/timer_three_notification_view_bg"
+        android:layout_below="@id/timer_two_notification_view_bg"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="@dimen/timer_notif_t_margin_start"
+        android:layout_marginEnd="@dimen/timer_notif_t_margin_end"
+        android:background="@drawable/timer_four_notif_background"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignStart="@id/timer_one_notification_view_bg"
+        android:layout_alignBottom="@id/timer_one_notification_view_bg"
+        android:gravity="center_vertical"
+        android:text="@string/timer_notif_timer_one_indicator"
+        android:textSize="@dimen/timer_notification_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/timer_notif_timer_indicator_margin_start"
+        android:layout_marginEnd="@dimen/timer_notif_timer_indicator_margin_end"/>
+
+    <TextView
+        android:id="@+id/timer_one_notification_view"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignBottom="@id/timer_one_notification_view_bg"
+        android:layout_alignEnd="@id/timer_one_notification_view_bg"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/timer_notification_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/timer_notif_timer_indicator_margin_end"
+        android:layout_marginEnd="@dimen/timer_notif_timer_indicator_margin_start"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignBottom="@id/timer_two_notification_view_bg"
+        android:layout_alignStart="@id/timer_two_notification_view_bg"
+        android:gravity="center_vertical"
+        android:text="@string/timer_notif_timer_two_indicator"
+        android:textSize="@dimen/timer_notification_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/timer_notif_timer_indicator_margin_start"
+        android:layout_marginEnd="@dimen/timer_notif_timer_indicator_margin_end"/>
+
+    <TextView
+        android:id="@+id/timer_two_notification_view"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignBottom="@id/timer_two_notification_view_bg"
+        android:layout_alignEnd="@id/timer_two_notification_view_bg"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/timer_notification_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/timer_notif_timer_indicator_margin_end"
+        android:layout_marginEnd="@dimen/timer_notif_timer_indicator_margin_start"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignStart="@id/timer_three_notification_view_bg"
+        android:layout_alignBottom="@id/timer_three_notification_view_bg"
+        android:gravity="center_vertical"
+        android:text="@string/timer_notif_timer_three_indicator"
+        android:textSize="@dimen/timer_notification_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/timer_notif_timer_indicator_margin_start"
+        android:layout_marginEnd="@dimen/timer_notif_timer_indicator_margin_end"/>
+
+    <TextView
+        android:id="@+id/timer_three_notification_view"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignBottom="@id/timer_three_notification_view_bg"
+        android:layout_alignEnd="@id/timer_three_notification_view_bg"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/timer_notification_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/timer_notif_timer_indicator_margin_end"
+        android:layout_marginEnd="@dimen/timer_notif_timer_indicator_margin_start"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignStart="@id/timer_four_notification_view_bg"
+        android:layout_alignBottom="@id/timer_four_notification_view_bg"
+        android:gravity="center_vertical"
+        android:text="@string/timer_notif_timer_four_indicator"
+        android:textSize="@dimen/timer_notification_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/timer_notif_timer_indicator_margin_start"
+        android:layout_marginEnd="@dimen/timer_notif_timer_indicator_margin_end"/>
+
+    <TextView
+        android:id="@+id/timer_four_notification_view"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/timer_notif_timer_view_height"
+        android:layout_alignBottom="@id/timer_four_notification_view_bg"
+        android:layout_alignEnd="@id/timer_four_notification_view_bg"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/timer_notification_text_size"
+        android:textColor="@color/text_color"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/timer_notif_timer_indicator_margin_end"
+        android:layout_marginEnd="@dimen/timer_notif_timer_indicator_margin_start"/>
+
+</RelativeLayout>
