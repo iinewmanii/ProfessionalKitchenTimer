@@ -61,7 +61,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             switch (timerNumberId) {
                 case 1:
                     alarmNotification(timerNumberId, context, timerOneNotifColor, timerOneLightColor, intent);
-                    timerPreferences.setTimerOneState(MainActivity.INPUT);
+                    timerPreferences.setTimerOneState(TimerState.INPUT);
                     timerPreferences.setStartTime(0);
                     timerPreferences.setOriginalTime(0);
                     timerPreferences.setPausedTime(0);
@@ -69,7 +69,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 case 2:
                     alarmNotification(timerNumberId, context, timerTwoNotifColor, timerTwoLightColor, intent);
-                    timerPreferences.setTimerTwoState(MainActivity.INPUT);
+                    timerPreferences.setTimerTwoState(TimerState.INPUT);
                     timerPreferences.setStartTimeTwo(0);
                     timerPreferences.setOriginalTimeTwo(0);
                     timerPreferences.setPausedTimeTwo(0);
@@ -77,7 +77,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 case 3:
                     alarmNotification(timerNumberId, context, timerThreeNotifColor, timerThreeLightColor, intent);
-                    timerPreferences.setTimerThreeState(MainActivity.INPUT);
+                    timerPreferences.setTimerThreeState(TimerState.INPUT);
                     timerPreferences.setStartTimeThree(0);
                     timerPreferences.setOriginalTimeThree(0);
                     timerPreferences.setPausedTimeThree(0);
@@ -85,7 +85,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 case 4:
                     alarmNotification(timerNumberId, context, timerFourNotifColor, timerFourLightColor, intent);
-                    timerPreferences.setTimerFourState(MainActivity.INPUT);
+                    timerPreferences.setTimerFourState(TimerState.INPUT);
                     timerPreferences.setStartTimeFour(0);
                     timerPreferences.setOriginalTimeFour(0);
                     timerPreferences.setPausedTimeFour(0);

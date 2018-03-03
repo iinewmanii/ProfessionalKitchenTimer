@@ -196,7 +196,7 @@ class PrefUtils {
         editor.apply();
     }
 
-    int getActiveTimer() {return timerPreferences.getInt(ACTIVE_TIMER, 1);}
+    int getActiveTimer() {return timerPreferences.getInt(ACTIVE_TIMER, TimerState.NO_ACTIVE_TIMER);}
 
     void setActiveTimer(int activeTimer) {
         SharedPreferences.Editor editor = timerPreferences.edit();

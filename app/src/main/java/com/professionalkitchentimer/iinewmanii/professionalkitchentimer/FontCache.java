@@ -11,7 +11,7 @@ import java.util.Map;
  * Class used to cache font to speed up app on slower devices and use less memory.
  */
 
-final class FontCache {
+class FontCache {
 
     private static final Map<String, Typeface> fontCache = new HashMap<>();
 

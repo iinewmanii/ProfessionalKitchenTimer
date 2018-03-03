@@ -180,8 +180,7 @@
         android:layout_alignTop="@id/lcd_background_view"
         android:layout_alignEnd="@id/lcd_background_view"
         android:layout_marginStart="2dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/hms_zero" />
+        android:layout_marginEnd="8dp" />
 
     <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
         style="@style/lcd_screen_clockface_text"
@@ -194,8 +193,7 @@
         android:layout_alignTop="@id/lcd_background_view"
         android:layout_alignEnd="@id/lcd_background_view"
         android:layout_marginStart="2dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/hms_zero" />
+        android:layout_marginEnd="8dp" />
 
     <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
         style="@style/lcd_screen_clockface_text"
@@ -208,8 +206,7 @@
         android:layout_alignTop="@id/lcd_background_view"
         android:layout_alignEnd="@id/lcd_background_view"
         android:layout_marginStart="2dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/hms_zero" />
+        android:layout_marginEnd="8dp" />
 
     <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
         style="@style/lcd_screen_clockface_text"
@@ -222,8 +219,7 @@
         android:layout_alignTop="@id/lcd_background_view"
         android:layout_alignEnd="@id/lcd_background_view"
         android:layout_marginStart="2dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/hms_zero" />
+        android:layout_marginEnd="8dp" />
 
     <com.professionalkitchentimer.iinewmanii.professionalkitchentimer.ClockTextView
         style="@style/lcd_screen_timer_indicator_text"

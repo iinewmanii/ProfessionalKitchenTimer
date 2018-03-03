@@ -30,16 +30,12 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import android.support.annotation.IntDef;
-
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static android.media.AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE;
 
-//import android.util.Log;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements View.OnLongClickListener, View.OnTouchListener {
 
@@ -72,48 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     private boolean mAutoIncrement;
     private boolean mAutoDecrement;
 
-    /** This is an IntDef to indicate which timer is the active timer **/
-    @Retention(RetentionPolicy.SOURCE)
-
-    @IntDef({TIMER_ONE,
-            TIMER_TWO,
-            TIMER_THREE,
-            TIMER_FOUR,
-            NO_ACTIVE_TIMER})
-
-    @interface TimerActive {}
-
-    public static final int NO_ACTIVE_TIMER = 0;
-    public static final int TIMER_ONE = 1;
-    public static final int TIMER_TWO = 2;
-    public static final int TIMER_THREE = 3;
-    public static final int TIMER_FOUR = 4;
-
-    private int activeTimer;
-
-    /** These are IntDefs to keep track of timer state **/
-    @Retention(RetentionPolicy.SOURCE)
-
-    @IntDef({INPUT, RUNNING, PAUSED})
-    @interface TimerOneState {}
-
-    @IntDef({INPUT, RUNNING, PAUSED})
-    @interface TimerTwoState {}
-
-    @IntDef({INPUT, RUNNING, PAUSED})
-    @interface TimerThreeState {}
-
-    @IntDef({INPUT, RUNNING, PAUSED})
-    @interface TimerFourState {}
-
-    public static final int INPUT = 0;
-    public static final int RUNNING = 1;
-    public static final int PAUSED = 2;
-
-    private int timerOneState;
-    private int timerTwoState;
-    private int timerThreeState;
-    private int timerFourState;
+    private final TimerState timerState = new TimerState();
 
     private boolean timerNotificationRunning;
     private boolean timerWarning;
@@ -140,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     private AudioManager.OnAudioFocusChangeListener afChangeListener;
     private Vibrator vibrator;
 
-//    private static final String TAG = "NEWMAN";
+    private static final String TAG = "NEWMAN";
     private static final String CREATE_NOTIFICATION_ACTION = "CREATE_NOTIFICATION";
 
     @Override
@@ -231,12 +186,14 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
-        setActiveTimer(timerPreferences.getActiveTimer());
+        timerState.setActiveTimer(timerPreferences.getActiveTimer());
 
-        setTimerOneState(timerPreferences.getTimerOneState());
-        setTimerTwoState(timerPreferences.getTimerTwoState());
-        setTimerThreeState(timerPreferences.getTimerThreeState());
-        setTimerFourState(timerPreferences.getTimerFourState());
+        Log.v(TAG, "Timer prefs active timer = " + timerPreferences.getActiveTimer());
+
+        timerState.setTimerOneState(timerPreferences.getTimerOneState());
+        timerState.setTimerTwoState(timerPreferences.getTimerTwoState());
+        timerState.setTimerThreeState(timerPreferences.getTimerThreeState());
+        timerState.setTimerFourState(timerPreferences.getTimerFourState());
 
         millisToCount = timerPreferences.getOriginalTime();
         millisToCountTwo = timerPreferences.getOriginalTimeTwo();
@@ -259,74 +216,74 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             timerPreferences.setTimerNotificationAlarm(false);
         }
 
-        if (activeTimer == NO_ACTIVE_TIMER) {
-            setActiveTimer(TIMER_ONE);
+        if (timerState.getActiveTimer() == TimerState.NO_ACTIVE_TIMER) {
+            timerState.setActiveTimer(TimerState.TIMER_ONE);
 
-            setInputVis();
+            setInputVis(R.string.timer_one_indicator);
 
             timerIndicator.setText(R.string.timer_one_indicator);
         }
 
-    if ((timerOneState | timerTwoState | timerThreeState | timerFourState) == RUNNING) {
+    if ((timerState.getTimerOneState() |
+            timerState.getTimerTwoState() |
+            timerState.getTimerThreeState() |
+            timerState.getTimerFourState()) == TimerState.RUNNING) {
             removeAlarmManager();
             initTimer();
-//            Log.v(TAG, "Alarm Manager Removed, Initialize Timer");
         }
 
-        if ((timerOneState == PAUSED) && (pausedTime > 0)) {
+        if ((timerState.getTimerOneState() == TimerState.PAUSED) && (pausedTime > 0)) {
             hms = timerFormat(pausedTime);
             clockView1.setText(hms);
         }
 
-        if ((timerTwoState == PAUSED) && (pausedTimeTwo > 0)) {
+        if ((timerState.getTimerTwoState() == TimerState.PAUSED) && (pausedTimeTwo > 0)) {
             hms = timerFormat(pausedTimeTwo);
             clockView2.setText(hms);
         }
 
-        if ((timerThreeState == PAUSED) && (pausedTimeThree > 0)) {
+        if ((timerState.getTimerThreeState() == TimerState.PAUSED) && (pausedTimeThree > 0)) {
             hms = timerFormat(pausedTimeThree);
             clockView3.setText(hms);
         }
 
-        if ((timerFourState == PAUSED) && (pausedTimeFour > 0)) {
+        if ((timerState.getTimerFourState() == TimerState.PAUSED) && (pausedTimeFour > 0)) {
             hms = timerFormat(pausedTimeFour);
             clockView4.setText(hms);
         }
 
-        if ((activeTimer == TIMER_ONE) && ((pausedTime > 0) || (timerOneState == RUNNING))) {
-            setClockViewOneVis();
-            timerIndicator.setText(R.string.timer_one_indicator);
-        } else if ((activeTimer == TIMER_ONE) && (pausedTime <= 0)) {
-            setInputVis();
-            timerIndicator.setText(R.string.timer_one_indicator);
+        if (timerState.getActiveTimer() == TimerState.TIMER_ONE) {
+            if ((timerState.getTimerOneState() == TimerState.RUNNING) | (timerState.getTimerOneState() == TimerState.PAUSED)) {
+                Log.v(TAG, "setClockViewOneVis");
+                setClockViewOneVis();
+            } else if (timerState.getTimerOneState() == TimerState.INPUT) {
+                setInputVis(R.string.timer_one_indicator);
+            }
         }
 
-        if ((activeTimer == TIMER_TWO) && ((pausedTimeTwo > 0) || (timerTwoState == RUNNING))) {
-            setClockViewTwoVis();
-            timerIndicator.setText(R.string.timer_two_indicator);
-        } else if ((activeTimer == TIMER_TWO) && (pausedTimeTwo <= 0)) {
-            setInputVis();
-            timerIndicator.setText(R.string.timer_two_indicator);
+        if (timerState.getActiveTimer() == TimerState.TIMER_TWO) {
+            if ((timerState.getTimerTwoState() == TimerState.RUNNING) | (timerState.getTimerTwoState() == TimerState.PAUSED)) {
+                setClockViewTwoVis();
+            } else if (timerState.getTimerTwoState() == TimerState.INPUT) {
+                setInputVis(R.string.timer_two_indicator);
+            }
         }
 
-        if ((activeTimer == TIMER_THREE) && ((pausedTimeThree > 0) || (timerThreeState == RUNNING))) {
-            setClockViewThreeVis();
-            timerIndicator.setText(R.string.timer_three_indicator);
-        } else if ((activeTimer == TIMER_THREE) && (pausedTimeThree <= 0)) {
-            setInputVis();
-            timerIndicator.setText(R.string.timer_three_indicator);
+        if (timerState.getActiveTimer() == TimerState.TIMER_THREE) {
+            if ((timerState.getTimerThreeState() == TimerState.RUNNING) | (timerState.getTimerThreeState() == TimerState.PAUSED)) {
+                setClockViewThreeVis();
+            } else if (timerState.getTimerThreeState() == TimerState.INPUT) {
+                setInputVis(R.string.timer_three_indicator);
+            }
         }
 
-        if ((activeTimer == TIMER_FOUR) && ((pausedTimeFour > 0) || (timerFourState == RUNNING))) {
-            setClockViewFourVis();
-            timerIndicator.setText(R.string.timer_four_indicator);
-        } else if ((activeTimer == TIMER_FOUR) && (pausedTimeFour <= 0)) {
-            setInputVis();
-            timerIndicator.setText(R.string.timer_four_indicator);
+        if (timerState.getActiveTimer() == TimerState.TIMER_FOUR) {
+            if ((timerState.getTimerFourState() == TimerState.RUNNING) | (timerState.getTimerFourState() == TimerState.PAUSED)) {
+                setClockViewFourVis();
+            } else if (timerState.getTimerFourState() == TimerState.INPUT) {
+                setInputVis(R.string.timer_four_indicator);
+            }
         }
-
-        /*timerNotificationRunning = false;
-        timerPreferences.setTimerNotificationRunning(false);*/
 
         if (timerNotificationRunning) {
             Intent timerNotifIntent = new Intent(this, TimerNotifyService.class);
@@ -346,26 +303,27 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        timerPreferences.setActiveTimer(activeTimer);
+        timerPreferences.setActiveTimer(timerState.getActiveTimer());
 
 //        Log.v(TAG, "onPause pausedTime = " + pausedTime);
 
-        if (timerOneState == RUNNING) {
+        if (timerState.getTimerOneState() == TimerState.RUNNING) {
             timerPreferences.setOriginalTime(millisToCount);
             timerPreferences.setPausedTime(pausedTime);
-            timerPreferences.setTimerOneState(timerOneState);
+            timerPreferences.setTimerOneState(timerState.getTimerOneState());
 //            Log.v(TAG, "timerPreferences timerOneRunning = true");
             countDownTimer.cancel();
             countDownTimer = null;
-        } else if (timerOneState == INPUT) {
+        } else if (timerState.getTimerOneState() == TimerState.INPUT) {
             millisToCount = 0;
             timerPreferences.setOriginalTime(0);
+            timerPreferences.setTimerOneState(timerState.getTimerOneState());
             if (countDownTimer != null) {
                 countDownTimer.cancel();
                 countDownTimer = null;
             }
         } else {
-            timerPreferences.setTimerOneState(timerOneState);
+            timerPreferences.setTimerOneState(timerState.getTimerOneState());
             timerPreferences.setPausedTime(pausedTime);
             timerPreferences.setOriginalTime(millisToCount);
             if (countDownTimer != null) {
@@ -374,21 +332,22 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             }
         }
 
-        if (timerTwoState == RUNNING) {
+        if (timerState.getTimerTwoState() == TimerState.RUNNING) {
             timerPreferences.setOriginalTimeTwo(millisToCountTwo);
             timerPreferences.setPausedTimeTwo(pausedTimeTwo);
-            timerPreferences.setTimerTwoState(timerTwoState);
+            timerPreferences.setTimerTwoState(timerState.getTimerTwoState());
             countDownTimerTwo.cancel();
             countDownTimerTwo = null;
-        } else if (timerTwoState == INPUT) {
+        } else if (timerState.getTimerTwoState() == TimerState.INPUT) {
             millisToCountTwo = 0;
             timerPreferences.setOriginalTimeTwo(0);
+            timerPreferences.setTimerTwoState(timerState.getTimerTwoState());
             if (countDownTimerTwo != null) {
                 countDownTimerTwo.cancel();
                 countDownTimerTwo = null;
             }
         } else {
-            timerPreferences.setTimerTwoState(timerTwoState);
+            timerPreferences.setTimerTwoState(timerState.getTimerTwoState());
             timerPreferences.setPausedTimeTwo(pausedTimeTwo);
             timerPreferences.setOriginalTimeTwo(millisToCountTwo);
             if (countDownTimerTwo != null) {
@@ -397,21 +356,22 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             }
         }
 
-        if (timerThreeState == RUNNING) {
+        if (timerState.getTimerThreeState() == TimerState.RUNNING) {
             timerPreferences.setOriginalTimeThree(millisToCountThree);
             timerPreferences.setPausedTimeThree(pausedTimeThree);
-            timerPreferences.setTimerThreeState(timerThreeState);
+            timerPreferences.setTimerThreeState(timerState.getTimerThreeState());
             countDownTimerThree.cancel();
             countDownTimerThree = null;
-        } else if (timerThreeState == INPUT) {
+        } else if (timerState.getTimerThreeState() == TimerState.INPUT) {
             millisToCountThree = 0;
             timerPreferences.setOriginalTimeThree(0);
+            timerPreferences.setTimerThreeState(timerState.getTimerThreeState());
             if (countDownTimerThree != null) {
                 countDownTimerThree.cancel();
                 countDownTimerThree = null;
             }
         } else {
-            timerPreferences.setTimerThreeState(timerThreeState);
+            timerPreferences.setTimerThreeState(timerState.getTimerThreeState());
             timerPreferences.setPausedTimeThree(pausedTimeThree);
             timerPreferences.setOriginalTimeThree(millisToCountThree);
             if (countDownTimerThree != null) {
@@ -420,21 +380,22 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             }
         }
 
-        if (timerFourState == RUNNING) {
+        if (timerState.getTimerFourState() == TimerState.RUNNING) {
             timerPreferences.setOriginalTimeFour(millisToCountFour);
             timerPreferences.setPausedTimeFour(pausedTimeFour);
-            timerPreferences.setTimerFourState(timerFourState);
+            timerPreferences.setTimerFourState(timerState.getTimerFourState());
             countDownTimerFour.cancel();
             countDownTimerFour = null;
-        } else if (timerFourState == INPUT) {
+        } else if (timerState.getTimerFourState() == TimerState.INPUT) {
             millisToCountFour = 0;
             timerPreferences.setOriginalTimeFour(0);
+            timerPreferences.setTimerFourState(timerState.getTimerFourState());
             if (countDownTimerFour != null) {
                 countDownTimerFour.cancel();
                 countDownTimerFour = null;
             }
         } else {
-            timerPreferences.setTimerFourState(timerFourState);
+            timerPreferences.setTimerFourState(timerState.getTimerFourState());
             timerPreferences.setPausedTimeFour(pausedTimeFour);
             timerPreferences.setOriginalTimeFour(millisToCountFour);
             if (countDownTimerFour != null) {
@@ -451,7 +412,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         timerPreferences.setWakeUpTimeFour(wakeUpTimeFour);
 
 
-        if (!timerNotificationRunning && ((timerOneState | timerTwoState | timerThreeState | timerFourState ) == RUNNING)) {
+        if (!timerNotificationRunning && ((timerState.getTimerOneState() |
+                timerState.getTimerTwoState() |
+                timerState.getTimerThreeState() |
+                timerState.getTimerOneState() ) == TimerState.RUNNING)) {
             Intent timerNotifIntent = new Intent(this, TimerNotifyService.class);
             startService(timerNotifIntent);
             timerPreferences.setTimerNotificationRunning(true);
@@ -515,54 +479,54 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 break;
 
             case R.id.t1_button:
-                    if (((activeTimer == TIMER_ONE) && (timerOneState == INPUT)) ||
-                            ((activeTimer == TIMER_TWO) && (timerTwoState == INPUT)) ||
-                            ((activeTimer == TIMER_THREE) && (timerThreeState == INPUT)) ||
-                            ((activeTimer == TIMER_FOUR) && (timerFourState == INPUT))) {
+                    if (((timerState.getActiveTimer() == TimerState.TIMER_ONE) && (timerState.getTimerOneState() == TimerState.INPUT)) |
+                            ((timerState.getActiveTimer() == TimerState.TIMER_TWO) && (timerState.getTimerTwoState() == TimerState.INPUT)) |
+                            ((timerState.getActiveTimer() == TimerState.TIMER_THREE) && (timerState.getTimerThreeState() == TimerState.INPUT)) |
+                            ((timerState.getActiveTimer() == TimerState.TIMER_FOUR) && (timerState.getTimerFourState() == TimerState.INPUT))) {
                         timerHour = timerPreferences.getPreviousHoursOne();
                         timerMinute = timerPreferences.getPreviousMinutesOne();
                         setInputText();
 
-                        setInputVis();
+//                        setInputVis();
                     }
                 break;
 
             case R.id.t2_button:
-                if (((activeTimer == TIMER_ONE) && (timerOneState == INPUT)) ||
-                        ((activeTimer == TIMER_TWO) && (timerTwoState == INPUT)) ||
-                        ((activeTimer == TIMER_THREE) && (timerThreeState == INPUT)) ||
-                        ((activeTimer == TIMER_FOUR) && (timerFourState == INPUT))) {
+                if (((timerState.getActiveTimer() == TimerState.TIMER_ONE) && (timerState.getTimerOneState() == TimerState.INPUT)) |
+                        ((timerState.getActiveTimer() == TimerState.TIMER_TWO) && (timerState.getTimerTwoState() == TimerState.INPUT)) |
+                        ((timerState.getActiveTimer() == TimerState.TIMER_THREE) && (timerState.getTimerThreeState() == TimerState.INPUT)) |
+                        ((timerState.getActiveTimer() == TimerState.TIMER_FOUR) && (timerState.getTimerFourState() == TimerState.INPUT))) {
                     timerHour = timerPreferences.getPreviousHoursTwo();
                     timerMinute = timerPreferences.getPreviousMinutesTwo();
                     setInputText();
 
-                    setInputVis();
+//                    setInputVis();
                 }
                 break;
 
             case R.id.t3_button:
-                if (((activeTimer == TIMER_ONE) && (timerOneState == INPUT)) ||
-                        ((activeTimer == TIMER_TWO) && (timerTwoState == INPUT)) ||
-                        ((activeTimer == TIMER_THREE) && (timerThreeState == INPUT)) ||
-                        ((activeTimer == TIMER_FOUR) && (timerFourState == INPUT))) {
+                if (((timerState.getActiveTimer() == TimerState.TIMER_ONE) && (timerState.getTimerOneState() == TimerState.INPUT)) |
+                        ((timerState.getActiveTimer() == TimerState.TIMER_TWO) && (timerState.getTimerTwoState() == TimerState.INPUT)) |
+                        ((timerState.getActiveTimer() == TimerState.TIMER_THREE) && (timerState.getTimerThreeState() == TimerState.INPUT)) |
+                        ((timerState.getActiveTimer() == TimerState.TIMER_FOUR) && (timerState.getTimerFourState() == TimerState.INPUT))) {
                     timerHour = timerPreferences.getPreviousHoursThree();
                     timerMinute = timerPreferences.getPreviousMinutesThree();
                     setInputText();
 
-                    setInputVis();
+//                    setInputVis();
                 }
                 break;
 
             case R.id.t4_button:
-                if (((activeTimer == TIMER_ONE) && (timerOneState == INPUT)) ||
-                        ((activeTimer == TIMER_TWO) && (timerTwoState == INPUT)) ||
-                        ((activeTimer == TIMER_THREE) && (timerThreeState == INPUT)) ||
-                        ((activeTimer == TIMER_FOUR) && (timerFourState == INPUT))) {
+                if (((timerState.getActiveTimer() == TimerState.TIMER_ONE) && (timerState.getTimerOneState() == TimerState.INPUT)) |
+                        ((timerState.getActiveTimer() == TimerState.TIMER_TWO) && (timerState.getTimerTwoState() == TimerState.INPUT)) |
+                        ((timerState.getActiveTimer() == TimerState.TIMER_THREE) && (timerState.getTimerThreeState() == TimerState.INPUT)) |
+                        ((timerState.getActiveTimer() == TimerState.TIMER_FOUR) && (timerState.getTimerFourState() == TimerState.INPUT))) {
                     timerHour = timerPreferences.getPreviousHoursFour();
                     timerMinute = timerPreferences.getPreviousMinutesFour();
                     setInputText();
 
-                    setInputVis();
+//                    setInputVis();
                 }
                 break;
 
@@ -597,25 +561,21 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     public void timerOneButton(View view) {
 
         if (view.getId() == R.id.t1_button) {
-            if ((activeTimer != TIMER_ONE) && (timerOneState != INPUT)) {
+            if (timerState.getTimerOneState() == TimerState.INPUT) {
 //            Log.v(TAG, "Timer One Selected");
-
-                setActiveTimer(TIMER_ONE);
-
-                setClockViewOneVis();
-
-                timerIndicator.setText(R.string.timer_one_indicator);
-            } else {
-//            Log.v(TAG, "Timer One Selected");
-                setActiveTimer(TIMER_ONE);
+                timerState.setActiveTimer(TimerState.TIMER_ONE);
 
                 resetTimerInputValues();
 
                 setInputText();
 
-                setInputVis();
+                setInputVis(R.string.timer_one_indicator);
+            } else {
+//            Log.v(TAG, "Timer One Selected");
 
-                timerIndicator.setText(R.string.timer_one_indicator);
+                timerState.setActiveTimer(TimerState.TIMER_ONE);
+
+                setClockViewOneVis();
             }
         }
     }
@@ -623,24 +583,20 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     public void timerTwoButton(View view) {
 
         if (view.getId() == R.id.t2_button) {
-            if ((activeTimer != TIMER_TWO) && (timerTwoState != INPUT)) {
+            if (timerState.getTimerTwoState() == TimerState.INPUT) {
 //            Log.v(TAG, "Timer Two Selected");
-                setActiveTimer(TIMER_TWO);
-
-                setClockViewTwoVis();
-
-                timerIndicator.setText(R.string.timer_two_indicator);
-            } else {
-//            Log.v(TAG, "Timer Two Selected");
-                setActiveTimer(TIMER_TWO);
+                timerState.setActiveTimer(TimerState.TIMER_TWO);
 
                 resetTimerInputValues();
 
                 setInputText();
 
-                setInputVis();
+                setInputVis(R.string.timer_two_indicator);
+            } else {
+//            Log.v(TAG, "Timer Two Selected");
+                timerState.setActiveTimer(TimerState.TIMER_TWO);
 
-                timerIndicator.setText(R.string.timer_two_indicator);
+                setClockViewTwoVis();
             }
         }
     }
@@ -648,24 +604,20 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     public void timerThreeButton(View view) {
 
         if (view.getId() == R.id.t3_button) {
-            if ((activeTimer != TIMER_THREE) && (timerThreeState != INPUT)) {
+            if (timerState.getTimerThreeState() == TimerState.INPUT) {
 //            Log.v(TAG, "Timer Three Selected");
-                setActiveTimer(TIMER_THREE);
-
-                setClockViewThreeVis();
-
-                timerIndicator.setText(R.string.timer_three_indicator);
-            } else {
-//            Log.v(TAG, "Timer Three Selected");
-                setActiveTimer(TIMER_THREE);
+                timerState.setActiveTimer(TimerState.TIMER_THREE);
 
                 resetTimerInputValues();
 
                 setInputText();
 
-                setInputVis();
+                setInputVis(R.string.timer_three_indicator);
+            } else {
+//            Log.v(TAG, "Timer Three Selected");
+                timerState.setActiveTimer(TimerState.TIMER_THREE);
 
-                timerIndicator.setText(R.string.timer_three_indicator);
+                setClockViewThreeVis();
             }
         }
     }
@@ -673,24 +625,20 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     public void timerFourButton(View view) {
 
         if (view.getId() == R.id.t4_button) {
-            if ((activeTimer != TIMER_FOUR) && (timerFourState != INPUT)) {
+            if (timerState.getTimerFourState() == TimerState.INPUT) {
 //            Log.v(TAG, "Timer Four Selected");
-                setActiveTimer(TIMER_FOUR);
-
-                setClockViewFourVis();
-
-                timerIndicator.setText(R.string.timer_four_indicator);
-            } else {
-//            Log.v(TAG, "Timer Four Selected");
-                setActiveTimer(TIMER_FOUR);
+                timerState.setActiveTimer(TimerState.TIMER_FOUR);
 
                 resetTimerInputValues();
 
                 setInputText();
 
-                setInputVis();
+                setInputVis(R.string.timer_four_indicator);
+            } else {
+//            Log.v(TAG, "Timer Four Selected");
+                timerState.setActiveTimer(TimerState.TIMER_FOUR);
 
-                timerIndicator.setText(R.string.timer_four_indicator);
+                setClockViewFourVis();
             }
         }
     }
@@ -751,17 +699,17 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     public void startButton(View view) {
 
         if (view.getId() == R.id.start_button) {
-            if ((activeTimer == TIMER_ONE) && (timerOneState == INPUT) && ((timerHour > 0) || (timerMinute > 0))) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_ONE) && (timerState.getTimerOneState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
                 setClockViewOneVis();
 
                 millisToCount = convertMillis();
                 countDownTimer = new CountTimer(millisToCount, 1);
                 hms = timerFormat(millisToCount);
                 clockView1.setText(hms);
-                timerPreferences.setStartTime(getNow());
+                timerPreferences.setStartTime(getCurrentTimeMillis());
                 countDownTimer.start();
 //            Log.v(TAG, "Timer Start");
-                setTimerOneState(RUNNING);
+                timerState.setTimerOneState(TimerState.RUNNING);
 
                 timerPreferences.setPreviousHoursOne(timerHour);
                 timerPreferences.setPreviousMinutesOne(timerMinute);
@@ -769,22 +717,22 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 resetTimerInputValues();
 
                 setInputText();
-            } else if ((activeTimer == TIMER_ONE) && (timerOneState == PAUSED)) {
+            } else if ((timerState.getActiveTimer() == TimerState.TIMER_ONE) && (timerState.getTimerOneState() == TimerState.PAUSED)) {
 //            Log.v(TAG, "pausedTime = " + pausedTime);
                 timerResume();
             }
 
-            if ((activeTimer == TIMER_TWO) && (timerTwoState == INPUT) && ((timerHour > 0) || (timerMinute > 0))) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_TWO) && (timerState.getTimerTwoState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
                 setClockViewTwoVis();
 
                 millisToCountTwo = convertMillis();
                 countDownTimerTwo = new CountTimer(millisToCountTwo, 2);
                 hms = timerFormat(millisToCountTwo);
                 clockView2.setText(hms);
-                timerPreferences.setStartTimeTwo(getNow());
+                timerPreferences.setStartTimeTwo(getCurrentTimeMillis());
                 countDownTimerTwo.start();
 //            Log.v(TAG, "Timer Two Start");
-                setTimerTwoState(RUNNING);
+                timerState.setTimerTwoState(TimerState.RUNNING);
 
                 timerPreferences.setPreviousHoursTwo(timerHour);
                 timerPreferences.setPreviousMinutesTwo(timerMinute);
@@ -792,21 +740,21 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 resetTimerInputValues();
 
                 setInputText();
-            } else if ((activeTimer == TIMER_TWO) && (timerTwoState == PAUSED)) {
+            } else if ((timerState.getActiveTimer() == TimerState.TIMER_TWO) && (timerState.getTimerTwoState() == TimerState.PAUSED)) {
                 timerResume();
             }
 
-            if ((activeTimer == TIMER_THREE) && (timerThreeState == INPUT) && ((timerHour > 0) || (timerMinute > 0))) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_THREE) && (timerState.getTimerThreeState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
                 setClockViewThreeVis();
 
                 millisToCountThree = convertMillis();
                 countDownTimerThree = new CountTimer(millisToCountThree, 3);
                 hms = timerFormat(millisToCountThree);
                 clockView3.setText(hms);
-                timerPreferences.setStartTimeThree(getNow());
+                timerPreferences.setStartTimeThree(getCurrentTimeMillis());
                 countDownTimerThree.start();
 //            Log.v(TAG, "Timer Three Start");
-                setTimerThreeState(RUNNING);
+                timerState.setTimerThreeState(TimerState.RUNNING);
 
                 timerPreferences.setPreviousHoursThree(timerHour);
                 timerPreferences.setPreviousMinutesThree(timerMinute);
@@ -814,21 +762,21 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 resetTimerInputValues();
 
                 setInputText();
-            } else if ((activeTimer == TIMER_THREE) && (timerThreeState == PAUSED)) {
+            } else if ((timerState.getActiveTimer() == TimerState.TIMER_THREE) && (timerState.getTimerThreeState() == TimerState.PAUSED)) {
                 timerResume();
             }
 
-            if ((activeTimer == TIMER_FOUR) && (timerFourState == INPUT) && ((timerHour > 0) || (timerMinute > 0))) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_FOUR) && (timerState.getTimerFourState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
                 setClockViewFourVis();
 
                 millisToCountFour = convertMillis();
                 countDownTimerFour = new CountTimer(millisToCountFour, 4);
                 hms = timerFormat(millisToCountFour);
                 clockView4.setText(hms);
-                timerPreferences.setStartTimeFour(getNow());
+                timerPreferences.setStartTimeFour(getCurrentTimeMillis());
                 countDownTimerFour.start();
 //            Log.v(TAG, "Timer Four Start");
-                setTimerFourState(RUNNING);
+                timerState.setTimerFourState(TimerState.RUNNING);
 
                 timerPreferences.setPreviousHoursFour(timerHour);
                 timerPreferences.setPreviousMinutesFour(timerMinute);
@@ -836,7 +784,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 resetTimerInputValues();
 
                 setInputText();
-            } else if ((activeTimer == TIMER_FOUR) && (timerFourState == PAUSED)) {
+            } else if ((timerState.getActiveTimer() == TimerState.TIMER_FOUR) && (timerState.getTimerFourState() == TimerState.PAUSED)) {
                 timerResume();
             }
         }
@@ -845,7 +793,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     public void stopButton(View view) {
 
         if (view.getId() == R.id.stop_button) {
-            if ((timerOneState | timerTwoState | timerThreeState | timerFourState ) == RUNNING) {
+            if ((timerState.getTimerOneState() |
+                    timerState.getTimerTwoState() |
+                    timerState.getTimerThreeState() |
+                    timerState.getTimerFourState() ) == TimerState.RUNNING) {
                 timerPause();
             } else if (timerAlarm) {
                 stopAlarm();
@@ -857,19 +808,19 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     public void resetButton(View view) {
 
         if (view.getId() == R.id.reset_button) {
-            if ((activeTimer == TIMER_ONE) && (timerOneState != RUNNING)) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_ONE) && (timerState.getTimerOneState() != TimerState.RUNNING)) {
                 resetTimerOne();
             }
 
-            if ((activeTimer == TIMER_TWO) && (timerTwoState != RUNNING)) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_TWO) && (timerState.getTimerTwoState() != TimerState.RUNNING)) {
                 resetTimerTwo();
             }
 
-        if ((activeTimer == TIMER_THREE) && (timerThreeState != RUNNING)) {
+        if ((timerState.getActiveTimer() == TimerState.TIMER_THREE) && (timerState.getTimerThreeState() != TimerState.RUNNING)) {
                 resetTimerThree();
             }
 
-            if ((activeTimer == TIMER_FOUR) && (timerFourState != RUNNING)) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_FOUR) && (timerState.getTimerFourState() != TimerState.RUNNING)) {
                 resetTimerFour();
             }
         }
@@ -877,64 +828,64 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
     private void timerPause() {
 
-        if ((timerOneState == RUNNING) && (activeTimer == TIMER_ONE)) {
+        if ((timerState.getTimerOneState() == TimerState.RUNNING) && (timerState.getActiveTimer() == TimerState.TIMER_ONE)) {
             countDownTimer.cancel();
-            setTimerOneState(PAUSED);
+            timerState.setTimerOneState(TimerState.PAUSED);
         }
 
-        if ((timerTwoState == RUNNING) && (activeTimer == TIMER_TWO)) {
+        if ((timerState.getTimerTwoState() == TimerState.RUNNING) && (timerState.getActiveTimer() == TimerState.TIMER_TWO)) {
             countDownTimerTwo.cancel();
-            setTimerTwoState(PAUSED);
+            timerState.setTimerTwoState(TimerState.PAUSED);
         }
 
-        if ((timerThreeState == RUNNING) && (activeTimer == TIMER_THREE)) {
+        if ((timerState.getTimerThreeState() == TimerState.RUNNING) && (timerState.getActiveTimer() == TimerState.TIMER_THREE)) {
             countDownTimerThree.cancel();
-            setTimerThreeState(PAUSED);
+            timerState.setTimerThreeState(TimerState.PAUSED);
         }
 
-        if ((timerFourState == RUNNING) && (activeTimer == TIMER_FOUR)) {
+        if ((timerState.getTimerFourState() == TimerState.RUNNING) && (timerState.getActiveTimer() == TimerState.TIMER_FOUR)) {
             countDownTimerFour.cancel();
-            setTimerFourState(PAUSED);
+            timerState.setTimerFourState(TimerState.PAUSED);
         }
     }
 
     private void timerResume() {
 //        Log.v(TAG, "pausedTime = " + pausedTime);
 
-        if ((timerOneState == PAUSED) && (activeTimer == TIMER_ONE)) {
+        if ((timerState.getTimerOneState() == TimerState.PAUSED) && (timerState.getActiveTimer() == TimerState.TIMER_ONE)) {
             countDownTimer = new CountTimer(pausedTime, 1);
             countDownTimer.start();
-            setTimerOneState(RUNNING);
-            timerPreferences.setTimerOneState(timerOneState);
+            timerState.setTimerOneState(TimerState.RUNNING);
+            timerPreferences.setTimerOneState(timerState.getTimerOneState());
 //            Log.v(TAG, "timerResume");
         }
 
-        if ((timerTwoState == PAUSED) && (activeTimer == TIMER_TWO)) {
+        if ((timerState.getTimerTwoState() == TimerState.PAUSED) && (timerState.getActiveTimer() == TimerState.TIMER_TWO)) {
             countDownTimerTwo = new CountTimer(pausedTimeTwo, 2);
             countDownTimerTwo.start();
-            setTimerTwoState(RUNNING);
-            timerPreferences.setTimerTwoState(timerTwoState);
+            timerState.setTimerTwoState(TimerState.RUNNING);
+            timerPreferences.setTimerTwoState(timerState.getTimerTwoState());
 //            Log.v(TAG, "timerTwoResume");
         }
 
-        if ((timerThreeState == PAUSED) && (activeTimer == TIMER_THREE)) {
+        if ((timerState.getTimerThreeState() == TimerState.PAUSED) && (timerState.getActiveTimer() == TimerState.TIMER_THREE)) {
             countDownTimerThree = new CountTimer(pausedTimeThree, 3);
             countDownTimerThree.start();
-            setTimerThreeState(RUNNING);
-            timerPreferences.setTimerThreeState(timerThreeState);
+            timerState.setTimerThreeState(TimerState.RUNNING);
+            timerPreferences.setTimerThreeState(timerState.getTimerThreeState());
 //            Log.v(TAG, "timerThreeResume");
         }
 
-        if ((timerFourState == PAUSED) && (activeTimer == TIMER_FOUR)) {
+        if ((timerState.getTimerFourState() == TimerState.PAUSED) && (timerState.getActiveTimer() == TimerState.TIMER_FOUR)) {
             countDownTimerFour = new CountTimer(pausedTimeFour, 4);
             countDownTimerFour.start();
-            setTimerFourState(RUNNING);
-            timerPreferences.setTimerFourState(timerFourState);
+            timerState.setTimerFourState(TimerState.RUNNING);
+            timerPreferences.setTimerFourState(timerState.getTimerFourState());
 //            Log.v(TAG, "timerFourResume");
         }
     }
 
-    private static long getNow() {
+    private static long getCurrentTimeMillis() {
 
         return System.currentTimeMillis();
     }
@@ -952,6 +903,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         return (long) ((timerHour * 3600000) + (timerMinute * 60000));
     }
 
+    private static long recalcPausedTime(long millis, long startTime) {
+        return millis - (getCurrentTimeMillis() - startTime);
+    }
+
     private void initTimer() {
 //        Log.v(TAG, "initTimer()");
 
@@ -960,81 +915,56 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         long startTimeThree = timerPreferences.getStartTimeThree();
         long startTimeFour = timerPreferences.getStartTimeFour();
 
-        if ((startTime > 0) && (timerOneState == RUNNING)) {
-//            Log.v(TAG, "MillisToCalc " + millisToCount);
-//            Log.v(TAG, "startTime = " + startTime);
-            pausedTime = (millisToCount - (getNow() - startTime));
-//            Log.v(TAG, "MillisToCount " + millisToCount);
-//            Log.v(TAG, "pausedTime " + pausedTime);
-            if (pausedTime <= 0) {
-                setTimerOneState(INPUT);
-            } else if (timerOneState == RUNNING) {
-                setClockViewOneVis();
+        if ((startTime > 0) && (timerState.getTimerOneState() == TimerState.RUNNING)) {
+            pausedTime = recalcPausedTime(millisToCount, startTime);
 
+            if (pausedTime > 0) {
                 countDownTimer = new CountTimer(pausedTime, 1);
                 countDownTimer.start();
             }
-        } else if ((startTime > 0) && (timerOneState == PAUSED)) {
-            setTimerOneState(PAUSED);
-        } else {
-            setTimerOneState(INPUT);
+        } else if ((startTime > 0) && (timerState.getTimerOneState() == TimerState.PAUSED)) {
+            timerState.setTimerOneState(TimerState.PAUSED);
+        } else if (startTime <= 0) {
+            timerState.setTimerOneState(TimerState.INPUT);
         }
 
-        if ((startTimeTwo > 0) && (timerTwoState == RUNNING)) {
-//            Log.v(TAG, "MillisToCalcTwo " + millisToCountTwo);
-            pausedTimeTwo = (millisToCountTwo - (getNow() - startTimeTwo));
-//            Log.v(TAG, "MillisToCountTwo " + millisToCountTwo);
-//            Log.v(TAG, "pausedTimeTwo " + pausedTimeTwo);
-            if (pausedTimeTwo <= 0) {
-                setTimerTwoState(INPUT);
-            } else if (timerTwoState == RUNNING) {
-                setClockViewTwoVis();
+        if ((startTimeTwo > 0) && (timerState.getTimerTwoState() == TimerState.RUNNING)) {
+            pausedTimeTwo = recalcPausedTime(millisToCountTwo, startTimeTwo);
 
+            if (pausedTimeTwo >0 ) {
                 countDownTimerTwo = new CountTimer(pausedTimeTwo, 2);
                 countDownTimerTwo.start();
             }
-        } else if ((startTimeTwo > 0) && (timerTwoState == PAUSED)) {
-            setTimerTwoState(PAUSED);
-        } else {
-            setTimerTwoState(INPUT);
+        } else if ((startTimeTwo > 0) && (timerState.getTimerTwoState() == TimerState.PAUSED)) {
+            timerState.setTimerTwoState(TimerState.PAUSED);
+        } else if (startTimeTwo <= 0) {
+            timerState.setTimerTwoState(TimerState.INPUT);
         }
 
-        if ((startTimeThree > 0) && (timerThreeState == RUNNING)) {
-//            Log.v(TAG, "MillisToCalcThree " + millisToCountThree);
-            pausedTimeThree = (millisToCountThree - (getNow() - startTimeThree));
-//            Log.v(TAG, "MillisToCountThree " + millisToCountThree);
-//            Log.v(TAG, "pausedTimeThree " + pausedTimeThree);
-            if (pausedTimeThree <= 0) {
-                setTimerThreeState(INPUT);
-            } else if (timerThreeState == RUNNING) {
-                setClockViewThreeVis();
+        if ((startTimeThree > 0) && (timerState.getTimerThreeState() == TimerState.RUNNING)) {
+            pausedTimeThree = recalcPausedTime(millisToCountThree, startTimeThree);
 
+            if (pausedTimeThree > 0) {
                 countDownTimerThree = new CountTimer(pausedTimeThree, 3);
                 countDownTimerThree.start();
             }
-        } else if ((startTimeThree > 0) && (timerThreeState == PAUSED)) {
-            setTimerThreeState(PAUSED);
-        } else {
-            setTimerThreeState(INPUT);
+        } else if ((startTimeThree > 0) && (timerState.getTimerThreeState() == TimerState.PAUSED)) {
+            timerState.setTimerThreeState(TimerState.PAUSED);
+        } else if (startTimeThree <= 0){
+            timerState.setTimerThreeState(TimerState.INPUT);
         }
 
-        if ((startTimeFour > 0) && (timerFourState == RUNNING)) {
-//            Log.v(TAG, "MillisToCalcFour " + millisToCountFour);
-            pausedTimeFour = (millisToCountFour - (getNow() - startTimeFour));
-//            Log.v(TAG, "MillisToCountFour " + millisToCountFour);
-//            Log.v(TAG, "pausedTimeFour " + pausedTimeFour);
-            if (pausedTimeFour <= 0) {
-                setTimerFourState(INPUT);
-            } else if (timerFourState == RUNNING) {
-                setClockViewFourVis();
+        if ((startTimeFour > 0) && (timerState.getTimerFourState() == TimerState.RUNNING)) {
+            pausedTimeFour = recalcPausedTime(millisToCountFour, startTimeFour);
 
+            if (pausedTimeFour > 0) {
                 countDownTimerFour = new CountTimer(pausedTimeFour, 4);
                 countDownTimerFour.start();
             }
-        } else if ((startTimeFour > 0) && (timerFourState == PAUSED)) {
-            setTimerFourState(PAUSED);
-        } else {
-            setTimerFourState(INPUT);
+        } else if ((startTimeFour > 0) && (timerState.getTimerFourState() == TimerState.PAUSED)) {
+            timerState.setTimerFourState(TimerState.PAUSED);
+        } else if (startTimeFour <= 0){
+            timerState.setTimerFourState(TimerState.INPUT);
         }
     }
 
@@ -1401,22 +1331,18 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 //                            Log.v(TAG, "All Timers Reset");
 
                 if (((MainActivity) getActivity()).countDownTimer != null) {
-                    ((MainActivity) getActivity()).countDownTimer.cancel();
                     ((MainActivity) getActivity()).resetTimerOne();
                 }
 
                 if (((MainActivity) getActivity()).countDownTimerTwo != null) {
-                    ((MainActivity) getActivity()).countDownTimerTwo.cancel();
                     ((MainActivity) getActivity()).resetTimerTwo();
                 }
 
                 if (((MainActivity) getActivity()).countDownTimerThree != null) {
-                    ((MainActivity) getActivity()).countDownTimerThree.cancel();
                     ((MainActivity) getActivity()).resetTimerThree();
                 }
 
                 if (((MainActivity) getActivity()).countDownTimerFour != null) {
-                    ((MainActivity) getActivity()).countDownTimerFour.cancel();
                     ((MainActivity) getActivity()).resetTimerFour();
                 }
 
@@ -1516,58 +1442,74 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 case 1:
                     countDownTimer.cancel();
                     countDownTimer = null;
-                    setTimerOneState(INPUT);
+                    timerState.setTimerOneState(TimerState.INPUT);
                     millisToCount = 0;
 
-                    timerPreferences.setTimerOneState(timerOneState);
+                    timerPreferences.setTimerOneState(timerState.getTimerOneState());
                     timerPreferences.setStartTime(0);
                     timerPreferences.setOriginalTime(0);
                     timerPreferences.setPausedTime(0);
+
+                    resetTimerInputValues();
+
+                    setInputVis(R.string.timer_one_indicator);
+
                     break;
 
                 case 2:
                     countDownTimerTwo.cancel();
                     countDownTimerTwo = null;
-                    setTimerTwoState(INPUT);
+                    timerState.setTimerTwoState(TimerState.INPUT);
                     millisToCountTwo = 0;
 
-                    timerPreferences.setTimerTwoState(timerTwoState);
+                    timerPreferences.setTimerTwoState(timerState.getTimerTwoState());
                     timerPreferences.setStartTimeTwo(0);
                     timerPreferences.setOriginalTimeTwo(0);
                     timerPreferences.setPausedTimeTwo(0);
+
+                    resetTimerInputValues();
+
+                    setInputVis(R.string.timer_two_indicator);
+
                     break;
 
                 case 3:
                     countDownTimerThree.cancel();
                     countDownTimerThree = null;
-                    setTimerThreeState(INPUT);
+                    timerState.setTimerThreeState(TimerState.INPUT);
                     millisToCountThree = 0;
 
-                    timerPreferences.setTimerThreeState(timerThreeState);
+                    timerPreferences.setTimerThreeState(timerState.getTimerThreeState());
                     timerPreferences.setStartTimeThree(0);
                     timerPreferences.setOriginalTimeThree(0);
                     timerPreferences.setPausedTimeThree(0);
+
+                    resetTimerInputValues();
+
+                    setInputVis(R.string.timer_three_indicator);
+
                     break;
 
                 case 4:
                     countDownTimerFour.cancel();
                     countDownTimerFour = null;
-                    setTimerFourState(INPUT);
+                    timerState.setTimerFourState(TimerState.INPUT);
                     millisToCountFour = 0;
 
-                    timerPreferences.setTimerFourState(timerFourState);
+                    timerPreferences.setTimerFourState(timerState.getTimerFourState());
                     timerPreferences.setStartTimeFour(0);
                     timerPreferences.setOriginalTimeFour(0);
                     timerPreferences.setPausedTimeFour(0);
+
+                    resetTimerInputValues();
+
+                    setInputVis(R.string.timer_four_indicator);
+
                     break;
 
                 default:
                     break;
             }
-
-            resetTimerInputValues();
-
-            setInputVis();
 
             setInputText();
         }
@@ -1627,19 +1569,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         }
     }
 
-    public void setActiveTimer(@TimerActive int activeTimer) {
-        this.activeTimer = activeTimer;
-    }
-
-    public void setTimerOneState(@TimerOneState int timerOneState) { this.timerOneState = timerOneState; }
-
-    public void setTimerTwoState(@TimerTwoState int timerTwoState) { this.timerTwoState = timerTwoState; }
-
-    public void setTimerThreeState(@TimerThreeState int timerThreeState) { this.timerThreeState = timerThreeState; }
-
-    public void setTimerFourState(@TimerFourState int timerFourState) { this.timerFourState = timerFourState; }
-
-    private void setInputVis() {
+    private void setInputVis(int indicator) {
 
         inputSeconds.setVisibility(View.VISIBLE);
         inputMinutes.setVisibility(View.VISIBLE);
@@ -1648,6 +1578,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         clockView2.setVisibility(View.GONE);
         clockView3.setVisibility(View.GONE);
         clockView4.setVisibility(View.GONE);
+
+        timerIndicator.setText(indicator);
     }
 
     private void setInputText() {
@@ -1673,6 +1605,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         clockView2.setVisibility(View.GONE);
         clockView3.setVisibility(View.GONE);
         clockView4.setVisibility(View.GONE);
+
+        timerIndicator.setText(R.string.timer_one_indicator);
     }
 
     private void setClockViewTwoVis() {
@@ -1684,6 +1618,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         clockView2.setVisibility(View.VISIBLE);
         clockView3.setVisibility(View.GONE);
         clockView4.setVisibility(View.GONE);
+
+        timerIndicator.setText(R.string.timer_two_indicator);
     }
 
     private void setClockViewThreeVis() {
@@ -1695,6 +1631,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         clockView2.setVisibility(View.GONE);
         clockView3.setVisibility(View.VISIBLE);
         clockView4.setVisibility(View.GONE);
+
+        timerIndicator.setText(R.string.timer_three_indicator);
     }
 
     private void setClockViewFourVis() {
@@ -1706,12 +1644,15 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         clockView2.setVisibility(View.GONE);
         clockView3.setVisibility(View.GONE);
         clockView4.setVisibility(View.VISIBLE);
+
+        timerIndicator.setText(R.string.timer_four_indicator);
     }
 
     private void resetTimerOne() {
 //        Log.v(TAG, "Reset Timer One");
+        countDownTimer.cancel();
         countDownTimer = null;
-        setTimerOneState(INPUT);
+        timerState.setTimerOneState(TimerState.INPUT);
 
         resetTimerInputValues();
 
@@ -1720,18 +1661,19 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
         timerPreferences.setStartTime(0);
         timerPreferences.setOriginalTime(0);
-        timerPreferences.setTimerOneState(timerOneState);
+        timerPreferences.setTimerOneState(timerState.getTimerOneState());
         timerPreferences.setPausedTime(0);
 
-        setInputVis();
+        setInputVis(R.string.timer_one_indicator);
 
         setInputText();
     }
 
     private void resetTimerTwo() {
 //        Log.v(TAG, "Reset Timer Two");
+        countDownTimerTwo.cancel();
         countDownTimerTwo = null;
-        setTimerTwoState(INPUT);
+        timerState.setTimerTwoState(TimerState.INPUT);
 
         resetTimerInputValues();
 
@@ -1740,18 +1682,19 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
         timerPreferences.setStartTimeTwo(0);
         timerPreferences.setOriginalTimeTwo(0);
-        timerPreferences.setTimerTwoState(timerTwoState);
+        timerPreferences.setTimerTwoState(timerState.getTimerTwoState());
         timerPreferences.setPausedTimeTwo(0);
 
-        setInputVis();
+        setInputVis(R.string.timer_two_indicator);
 
         setInputText();
     }
 
     private void resetTimerThree() {
 //        Log.v(TAG, "Reset Timer Four");
+        countDownTimerThree.cancel();
         countDownTimerThree = null;
-        setTimerThreeState(INPUT);
+        timerState.setTimerThreeState(TimerState.INPUT);
 
         resetTimerInputValues();
 
@@ -1760,18 +1703,19 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
         timerPreferences.setStartTimeThree(0);
         timerPreferences.setOriginalTimeThree(0);
-        timerPreferences.setTimerThreeState(timerThreeState);
+        timerPreferences.setTimerThreeState(timerState.getTimerThreeState());
         timerPreferences.setPausedTimeThree(0);
 
-        setInputVis();
+        setInputVis(R.string.timer_three_indicator);
 
         setInputText();
     }
 
     private void resetTimerFour() {
 //        Log.v(TAG, "Reset Timer Four");
+        countDownTimerFour.cancel();
         countDownTimerFour = null;
-        setTimerFourState(INPUT);
+        timerState.setTimerFourState(TimerState.INPUT);
 
         resetTimerInputValues();
 
@@ -1780,10 +1724,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
         timerPreferences.setStartTimeFour(0);
         timerPreferences.setOriginalTimeFour(0);
-        timerPreferences.setTimerFourState(timerFourState);
+        timerPreferences.setTimerFourState(timerState.getTimerFourState());
         timerPreferences.setPausedTimeFour(0);
 
-        setInputVis();
+        setInputVis(R.string.timer_four_indicator);
 
         setInputText();
     }

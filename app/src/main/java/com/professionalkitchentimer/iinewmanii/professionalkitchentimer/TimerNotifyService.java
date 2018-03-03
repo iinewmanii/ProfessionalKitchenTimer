@@ -140,11 +140,11 @@ public class TimerNotifyService extends Service {
 
         RemoteViews remoteTimerViews = new RemoteViews(getPackageName(), R.layout.timer_notification);
 
-        if ((timerNotifTimeOne > 0) && (timerOneState == MainActivity.RUNNING)) {
+        if ((timerNotifTimeOne > 0) && (timerOneState == TimerState.RUNNING)) {
             String timeOne = timerFormat(timerNotifTimeOne);
 
             remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, timeOne);
-        } else if (timerOneState == MainActivity.PAUSED) {
+        } else if (timerOneState == TimerState.PAUSED) {
             String pTimeOne = timerFormat(pausedTime);
 
             remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, pTimeOne);
@@ -153,11 +153,11 @@ public class TimerNotifyService extends Service {
             remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, not_set);
         }
 
-        if ((timerNotifTimeTwo > 0) && (timerTwoState == MainActivity.RUNNING)) {
+        if ((timerNotifTimeTwo > 0) && (timerTwoState == TimerState.RUNNING)) {
             String timeTwo = timerFormat(timerNotifTimeTwo);
 
             remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, timeTwo);
-        } else if (timerTwoState == MainActivity.PAUSED) {
+        } else if (timerTwoState == TimerState.PAUSED) {
             String pTimeTwo = timerFormat(pausedTimeTwo);
 
             remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, pTimeTwo);
@@ -166,11 +166,11 @@ public class TimerNotifyService extends Service {
             remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, not_set);
         }
 
-        if ((timerNotifTimeThree > 0) && (timerThreeState == MainActivity.RUNNING)) {
+        if ((timerNotifTimeThree > 0) && (timerThreeState == TimerState.RUNNING)) {
             String timeThree = timerFormat(timerNotifTimeThree);
 
             remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, timeThree);
-        } else if (timerThreeState == MainActivity.PAUSED) {
+        } else if (timerThreeState == TimerState.PAUSED) {
             String pTimeThree = timerFormat(pausedTimeThree);
 
             remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, pTimeThree);
@@ -179,11 +179,11 @@ public class TimerNotifyService extends Service {
             remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, not_set);
         }
 
-        if ((timerNotifTimeFour > 0) && (timerFourState == MainActivity.RUNNING)) {
+        if ((timerNotifTimeFour > 0) && (timerFourState == TimerState.RUNNING)) {
             String timeFour = timerFormat(timerNotifTimeFour);
 
             remoteTimerViews.setTextViewText(R.id.timer_four_notification_view, timeFour);
-        } else if (timerFourState == MainActivity.PAUSED) {
+        } else if (timerFourState == TimerState.PAUSED) {
             String pTimeFour = timerFormat(pausedTimeFour);
 
             remoteTimerViews.setTextViewText(R.id.timer_four_notification_view, pTimeFour);
@@ -225,25 +225,25 @@ public class TimerNotifyService extends Service {
 
                 RemoteViews remoteTimerViews = new RemoteViews(getPackageName(), R.layout.timer_notification);
 
-                if ((timerNotifTimeOne > 0) && (timerOneState == MainActivity.RUNNING)) {
+                if ((timerNotifTimeOne > 0) && (timerOneState == TimerState.RUNNING)) {
                     String timeOne = timerFormat(timerNotifTimeOne);
 
                     remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, timeOne);
                 }
 
-                if ((timerNotifTimeTwo > 0) && (timerTwoState == MainActivity.RUNNING)) {
+                if ((timerNotifTimeTwo > 0) && (timerTwoState == TimerState.RUNNING)) {
                     String timeTwo = timerFormat(timerNotifTimeTwo);
 
                     remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, timeTwo);
                 }
 
-                if ((timerNotifTimeThree > 0) && (timerThreeState == MainActivity.RUNNING)) {
+                if ((timerNotifTimeThree > 0) && (timerThreeState == TimerState.RUNNING)) {
                     String timeThree = timerFormat(timerNotifTimeThree);
 
                     remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, timeThree);
                 }
 
-                if ((timerNotifTimeFour > 0) && (timerFourState == MainActivity.RUNNING)) {
+                if ((timerNotifTimeFour > 0) && (timerFourState == TimerState.RUNNING)) {
                     String timeFour = timerFormat(timerNotifTimeFour);
 
                     remoteTimerViews.setTextViewText(R.id.timer_four_notification_view, timeFour);
