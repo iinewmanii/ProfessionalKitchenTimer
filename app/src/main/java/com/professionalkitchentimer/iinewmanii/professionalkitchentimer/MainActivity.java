@@ -35,8 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 import static android.media.AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE;
 
-import android.util.Log;
-
 public class MainActivity extends AppCompatActivity implements View.OnLongClickListener, View.OnTouchListener {
 
     private TextView inputHours,
@@ -95,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     private AudioManager.OnAudioFocusChangeListener afChangeListener;
     private Vibrator vibrator;
 
-    private static final String TAG = "NEWMAN";
+//    private static final String TAG = "NEWMAN";
     private static final String CREATE_NOTIFICATION_ACTION = "CREATE_NOTIFICATION";
 
     @Override
@@ -106,28 +104,28 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
         setContentView(R.layout.activity_main);
 
-        inputSeconds = (TextView) findViewById(R.id.time_input_seconds);
-        inputMinutes = (TextView) findViewById(R.id.time_input_minutes);
-        inputHours = (TextView) findViewById(R.id.time_input_hours);
-        clockView1 = (TextView) findViewById(R.id.clock_text_view_1);
-        clockView2 = (TextView) findViewById(R.id.clock_text_view_2);
-        clockView3 = (TextView) findViewById(R.id.clock_text_view_3);
-        clockView4 = (TextView) findViewById(R.id.clock_text_view_4);
-        timerIndicator = (TextView) findViewById(R.id.timer_indicator);
+        inputSeconds = findViewById(R.id.time_input_seconds);
+        inputMinutes = findViewById(R.id.time_input_minutes);
+        inputHours = findViewById(R.id.time_input_hours);
+        clockView1 = findViewById(R.id.clock_text_view_1);
+        clockView2 = findViewById(R.id.clock_text_view_2);
+        clockView3 = findViewById(R.id.clock_text_view_3);
+        clockView4 = findViewById(R.id.clock_text_view_4);
+        timerIndicator = findViewById(R.id.timer_indicator);
 
-        t1_button = (Button) findViewById(R.id.t1_button);
-        t2_button = (Button) findViewById(R.id.t2_button);
-        t3_button = (Button) findViewById(R.id.t3_button);
-        t4_button = (Button) findViewById(R.id.t4_button);
-        minute_plus_button = (Button) findViewById(R.id.minute_plus_button);
-        minute_minus_button = (Button) findViewById(R.id.minute_minus_button);
-        reset_button = (Button) findViewById(R.id.reset_button);
+        t1_button = findViewById(R.id.t1_button);
+        t2_button = findViewById(R.id.t2_button);
+        t3_button = findViewById(R.id.t3_button);
+        t4_button = findViewById(R.id.t4_button);
+        minute_plus_button = findViewById(R.id.minute_plus_button);
+        minute_minus_button = findViewById(R.id.minute_minus_button);
+        reset_button = findViewById(R.id.reset_button);
 
         if (getScreenWidthDp(this) >= 360) {
             MobileAds.initialize(this, getResources().getString(R.string.ad_unit_id));
 
             if (mAdView == null) {
-                mAdView = (AdView) findViewById(R.id.adView);
+                mAdView = findViewById(R.id.adView);
 
                 AdRequest adRequest = new AdRequest.Builder()
                         .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
@@ -188,8 +186,6 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
         timerState.setActiveTimer(timerPreferences.getActiveTimer());
 
-        Log.v(TAG, "Timer prefs active timer = " + timerPreferences.getActiveTimer());
-
         timerState.setTimerOneState(timerPreferences.getTimerOneState());
         timerState.setTimerTwoState(timerPreferences.getTimerTwoState());
         timerState.setTimerThreeState(timerPreferences.getTimerThreeState());
@@ -220,8 +216,6 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             timerState.setActiveTimer(TimerState.TIMER_ONE);
 
             setInputVis(R.string.timer_one_indicator);
-
-            timerIndicator.setText(R.string.timer_one_indicator);
         }
 
     if ((timerState.getTimerOneState() |
@@ -229,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             timerState.getTimerThreeState() |
             timerState.getTimerFourState()) == TimerState.RUNNING) {
             removeAlarmManager();
-            initTimer();
+            reInitTimer();
         }
 
         if ((timerState.getTimerOneState() == TimerState.PAUSED) && (pausedTime > 0)) {
@@ -254,7 +248,6 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
         if (timerState.getActiveTimer() == TimerState.TIMER_ONE) {
             if ((timerState.getTimerOneState() == TimerState.RUNNING) | (timerState.getTimerOneState() == TimerState.PAUSED)) {
-                Log.v(TAG, "setClockViewOneVis");
                 setClockViewOneVis();
             } else if (timerState.getTimerOneState() == TimerState.INPUT) {
                 setInputVis(R.string.timer_one_indicator);
@@ -312,8 +305,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             timerPreferences.setPausedTime(pausedTime);
             timerPreferences.setTimerOneState(timerState.getTimerOneState());
 //            Log.v(TAG, "timerPreferences timerOneRunning = true");
-            countDownTimer.cancel();
-            countDownTimer = null;
+            if (countDownTimer != null) {
+                countDownTimer.cancel();
+                countDownTimer = null;
+            }
         } else if (timerState.getTimerOneState() == TimerState.INPUT) {
             millisToCount = 0;
             timerPreferences.setOriginalTime(0);
@@ -336,8 +331,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             timerPreferences.setOriginalTimeTwo(millisToCountTwo);
             timerPreferences.setPausedTimeTwo(pausedTimeTwo);
             timerPreferences.setTimerTwoState(timerState.getTimerTwoState());
-            countDownTimerTwo.cancel();
-            countDownTimerTwo = null;
+            if (countDownTimerTwo != null) {
+                countDownTimerTwo.cancel();
+                countDownTimerTwo = null;
+            }
         } else if (timerState.getTimerTwoState() == TimerState.INPUT) {
             millisToCountTwo = 0;
             timerPreferences.setOriginalTimeTwo(0);
@@ -360,8 +357,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             timerPreferences.setOriginalTimeThree(millisToCountThree);
             timerPreferences.setPausedTimeThree(pausedTimeThree);
             timerPreferences.setTimerThreeState(timerState.getTimerThreeState());
-            countDownTimerThree.cancel();
-            countDownTimerThree = null;
+            if (countDownTimerThree != null) {
+                countDownTimerThree.cancel();
+                countDownTimerThree = null;
+            }
         } else if (timerState.getTimerThreeState() == TimerState.INPUT) {
             millisToCountThree = 0;
             timerPreferences.setOriginalTimeThree(0);
@@ -384,8 +383,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             timerPreferences.setOriginalTimeFour(millisToCountFour);
             timerPreferences.setPausedTimeFour(pausedTimeFour);
             timerPreferences.setTimerFourState(timerState.getTimerFourState());
-            countDownTimerFour.cancel();
-            countDownTimerFour = null;
+            if (countDownTimerFour != null) {
+                countDownTimerFour.cancel();
+                countDownTimerFour = null;
+            }
         } else if (timerState.getTimerFourState() == TimerState.INPUT) {
             millisToCountFour = 0;
             timerPreferences.setOriginalTimeFour(0);
@@ -643,7 +644,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         }
     }
 
-    public void minutePlus(View view) {
+    public void minutePlusButton(View view) {
 
         if (view.getId() == R.id.minute_plus_button) {
             if (timerMinute == 59) {
@@ -660,7 +661,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         }
     }
 
-    public void minuteMinus(View view) {
+    public void minuteMinusButton(View view) {
 
         if (view.getId() == R.id.minute_minus_button) {
             if ((timerMinute == 0) && (timerHour > 0)) {
@@ -678,7 +679,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         }
     }
 
-    public void hourPlus(View view) {
+    public void hourPlusButton(View view) {
 
         if ((view.getId() == R.id.hour_plus_button) && (timerHour < 9)) {
 //            Log.v(TAG, "Hour Plus");
@@ -687,7 +688,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         }
     }
 
-    public void hourMinus(View view) {
+    public void hourMinusButton(View view) {
 
         if ((view.getId() == R.id.hour_minus_button) && (timerHour > 0)) {
 //            Log.v(TAG, "Hour Minus");
@@ -699,7 +700,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     public void startButton(View view) {
 
         if (view.getId() == R.id.start_button) {
-            if ((timerState.getActiveTimer() == TimerState.TIMER_ONE) && (timerState.getTimerOneState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_ONE) &&
+                    (timerState.getTimerOneState() == TimerState.INPUT) &&((timerHour > 0) | (timerMinute > 0))) {
                 setClockViewOneVis();
 
                 millisToCount = convertMillis();
@@ -722,7 +724,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 timerResume();
             }
 
-            if ((timerState.getActiveTimer() == TimerState.TIMER_TWO) && (timerState.getTimerTwoState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_TWO) &&
+                    (timerState.getTimerTwoState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
                 setClockViewTwoVis();
 
                 millisToCountTwo = convertMillis();
@@ -744,7 +747,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 timerResume();
             }
 
-            if ((timerState.getActiveTimer() == TimerState.TIMER_THREE) && (timerState.getTimerThreeState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_THREE) &&
+                    (timerState.getTimerThreeState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
                 setClockViewThreeVis();
 
                 millisToCountThree = convertMillis();
@@ -766,7 +770,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 timerResume();
             }
 
-            if ((timerState.getActiveTimer() == TimerState.TIMER_FOUR) && (timerState.getTimerFourState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
+            if ((timerState.getActiveTimer() == TimerState.TIMER_FOUR) &&
+                    (timerState.getTimerFourState() == TimerState.INPUT) && ((timerHour > 0) | (timerMinute > 0))) {
                 setClockViewFourVis();
 
                 millisToCountFour = convertMillis();
@@ -907,8 +912,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         return millis - (getCurrentTimeMillis() - startTime);
     }
 
-    private void initTimer() {
-//        Log.v(TAG, "initTimer()");
+    private void reInitTimer() {
+//        Log.v(TAG, "reInitTimer()");
 
         long startTime = timerPreferences.getStartTime();
         long startTimeTwo = timerPreferences.getStartTimeTwo();
@@ -1276,10 +1281,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         public void run() {
 
             if (mAutoIncrement) {
-                minutePlus(minute_plus_button);
+                minutePlusButton(minute_plus_button);
                 repeatMinuteHandler.postDelayed(new RptMinuteUpdater(), REP_DELAY);
             } else if (mAutoDecrement) {
-                minuteMinus(minute_minus_button);
+                minuteMinusButton(minute_minus_button);
                 repeatMinuteHandler.postDelayed(new RptMinuteUpdater(), REP_DELAY);
             }
         }
@@ -1650,8 +1655,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
     private void resetTimerOne() {
 //        Log.v(TAG, "Reset Timer One");
-        countDownTimer.cancel();
-        countDownTimer = null;
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
         timerState.setTimerOneState(TimerState.INPUT);
 
         resetTimerInputValues();
@@ -1671,8 +1678,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
     private void resetTimerTwo() {
 //        Log.v(TAG, "Reset Timer Two");
-        countDownTimerTwo.cancel();
-        countDownTimerTwo = null;
+        if (countDownTimerTwo != null) {
+            countDownTimerTwo.cancel();
+            countDownTimerTwo = null;
+        }
         timerState.setTimerTwoState(TimerState.INPUT);
 
         resetTimerInputValues();
@@ -1692,8 +1701,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
     private void resetTimerThree() {
 //        Log.v(TAG, "Reset Timer Four");
-        countDownTimerThree.cancel();
-        countDownTimerThree = null;
+        if (countDownTimerThree != null) {
+            countDownTimerThree.cancel();
+            countDownTimerThree = null;
+        }
         timerState.setTimerThreeState(TimerState.INPUT);
 
         resetTimerInputValues();
@@ -1713,8 +1724,10 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
 
     private void resetTimerFour() {
 //        Log.v(TAG, "Reset Timer Four");
-        countDownTimerFour.cancel();
-        countDownTimerFour = null;
+        if (countDownTimerFour != null) {
+            countDownTimerFour.cancel();
+            countDownTimerFour = null;
+        }
         timerState.setTimerFourState(TimerState.INPUT);
 
         resetTimerInputValues();

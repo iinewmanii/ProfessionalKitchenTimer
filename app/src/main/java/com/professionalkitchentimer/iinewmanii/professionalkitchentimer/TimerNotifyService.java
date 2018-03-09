@@ -1,11 +1,13 @@
 package com.professionalkitchentimer.iinewmanii.professionalkitchentimer;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -47,6 +49,8 @@ public class TimerNotifyService extends Service {
 
     private static final int TIMER_NOTIFICATION_ID = 13;
 
+    private static final String NOT_SET = "0:00:00";
+
     private int timerOneState;
     private int timerTwoState;
     private int timerThreeState;
@@ -78,9 +82,20 @@ public class TimerNotifyService extends Service {
 
         timerNotificationHandler = new Handler(handlerThread.getLooper());
 
-        timerNotificationBuilder = new NotificationCompat.Builder(this);
-
         timerNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String NOTIFICATION_CHANNEL_ID_TIMER_NOTIFY_SERVICE = "TIMER_NOTIFY_SERVICE";
+
+            timerNotificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID_TIMER_NOTIFY_SERVICE);
+
+            NotificationChannel serviceNotificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID_TIMER_NOTIFY_SERVICE,
+                    "Timer Notify Service", NotificationManager.IMPORTANCE_DEFAULT);
+
+            timerNotificationManager.createNotificationChannel(serviceNotificationChannel);
+        } else {
+            timerNotificationBuilder = new NotificationCompat.Builder(this);
+        }
 
         timerPreferences = new PrefUtils(this);
 
@@ -148,9 +163,8 @@ public class TimerNotifyService extends Service {
             String pTimeOne = timerFormat(pausedTime);
 
             remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, pTimeOne);
-        } else {
-            String not_set = timerFormat(0);
-            remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, not_set);
+        } else if (timerOneState == TimerState.INPUT) {
+            remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, NOT_SET);
         }
 
         if ((timerNotifTimeTwo > 0) && (timerTwoState == TimerState.RUNNING)) {
@@ -161,9 +175,8 @@ public class TimerNotifyService extends Service {
             String pTimeTwo = timerFormat(pausedTimeTwo);
 
             remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, pTimeTwo);
-        } else {
-            String not_set = timerFormat(0);
-            remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, not_set);
+        } else if (timerTwoState == TimerState.INPUT) {
+            remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, NOT_SET);
         }
 
         if ((timerNotifTimeThree > 0) && (timerThreeState == TimerState.RUNNING)) {
@@ -174,9 +187,8 @@ public class TimerNotifyService extends Service {
             String pTimeThree = timerFormat(pausedTimeThree);
 
             remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, pTimeThree);
-        } else {
-            String not_set = timerFormat(0);
-            remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, not_set);
+        } else if (timerThreeState == TimerState.INPUT) {
+            remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, NOT_SET);
         }
 
         if ((timerNotifTimeFour > 0) && (timerFourState == TimerState.RUNNING)) {
@@ -187,9 +199,8 @@ public class TimerNotifyService extends Service {
             String pTimeFour = timerFormat(pausedTimeFour);
 
             remoteTimerViews.setTextViewText(R.id.timer_four_notification_view, pTimeFour);
-        } else {
-            String not_set = timerFormat(0);
-            remoteTimerViews.setTextViewText(R.id.timer_four_notification_view, not_set);
+        } else if (timerFourState == TimerState.INPUT) {
+            remoteTimerViews.setTextViewText(R.id.timer_four_notification_view, NOT_SET);
         }
 
         timerNotificationBuilder.setPriority(Notification.PRIORITY_HIGH)
@@ -229,24 +240,48 @@ public class TimerNotifyService extends Service {
                     String timeOne = timerFormat(timerNotifTimeOne);
 
                     remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, timeOne);
+                } else if (timerOneState == TimerState.PAUSED) {
+                    String pTimeOne = timerFormat(pausedTime);
+
+                    remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, pTimeOne);
+                } else if (timerOneState == TimerState.INPUT) {
+                    remoteTimerViews.setTextViewText(R.id.timer_one_notification_view, NOT_SET);
                 }
 
                 if ((timerNotifTimeTwo > 0) && (timerTwoState == TimerState.RUNNING)) {
                     String timeTwo = timerFormat(timerNotifTimeTwo);
 
                     remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, timeTwo);
+                } else if (timerTwoState == TimerState.PAUSED) {
+                    String pTimeTwo = timerFormat(pausedTimeTwo);
+
+                    remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, pTimeTwo);
+                } else if (timerTwoState == TimerState.INPUT) {
+                    remoteTimerViews.setTextViewText(R.id.timer_two_notification_view, NOT_SET);
                 }
 
                 if ((timerNotifTimeThree > 0) && (timerThreeState == TimerState.RUNNING)) {
                     String timeThree = timerFormat(timerNotifTimeThree);
 
                     remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, timeThree);
+                } else if (timerThreeState == TimerState.PAUSED) {
+                    String pTimeThree = timerFormat(pausedTimeThree);
+
+                    remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, pTimeThree);
+                } else if (timerThreeState == TimerState.INPUT) {
+                    remoteTimerViews.setTextViewText(R.id.timer_three_notification_view, NOT_SET);
                 }
 
                 if ((timerNotifTimeFour > 0) && (timerFourState == TimerState.RUNNING)) {
                     String timeFour = timerFormat(timerNotifTimeFour);
 
                     remoteTimerViews.setTextViewText(R.id.timer_four_notification_view, timeFour);
+                } else if (timerFourState == TimerState.PAUSED) {
+                    String pTimeFour = timerFormat(pausedTimeFour);
+
+                    remoteTimerViews.setTextViewText(R.id.timer_four_notification_view, pTimeFour);
+                } else if (timerFourState == TimerState.INPUT) {
+                    remoteTimerViews.setTextViewText(R.id.timer_four_notification_view, NOT_SET);
                 }
 
                 timerNotificationBuilder.setCustomContentView(remoteTimerViews)

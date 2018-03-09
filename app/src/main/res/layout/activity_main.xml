@@ -297,7 +297,7 @@
         android:textSize="@dimen/pkt_hour_minute_plus_minus_size"
         android:textColor="@color/text_color"
         android:longClickable="true"
-        android:onClick="hourMinus"/>
+        android:onClick="hourMinusButton"/>
 
     <Button
         android:id="@+id/hour_plus_button"
@@ -311,7 +311,7 @@
         android:textSize="@dimen/pkt_hour_minute_plus_minus_size"
         android:textColor="@color/text_color"
         android:longClickable="true"
-        android:onClick="hourPlus"/>
+        android:onClick="hourPlusButton"/>
 
     <TextView
         android:soundEffectsEnabled="false"
@@ -343,7 +343,7 @@
         android:textSize="@dimen/pkt_hour_minute_plus_minus_size"
         android:textColor="@color/text_color"
         android:longClickable="true"
-        android:onClick="minuteMinus"/>
+        android:onClick="minuteMinusButton"/>
 
     <Button
         android:id="@+id/minute_plus_button"
@@ -357,7 +357,7 @@
         android:textSize="@dimen/pkt_hour_minute_plus_minus_size"
         android:textColor="@color/text_color"
         android:longClickable="true"
-        android:onClick="minutePlus"/>
+        android:onClick="minutePlusButton"/>
 
     <Button
         android:id="@+id/start_button"

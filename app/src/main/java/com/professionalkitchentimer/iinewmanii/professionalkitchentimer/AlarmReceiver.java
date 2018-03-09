@@ -1,12 +1,14 @@
 package com.professionalkitchentimer.iinewmanii.professionalkitchentimer;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -14,6 +16,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 
 import static android.support.v4.app.NotificationCompat.CATEGORY_ALARM;
+import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
 //import android.util.Log;
 
 /**
@@ -27,6 +30,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private static final String ALARM_NOTIFICATION_GROUP_KEY = "ALARM_NOTIFICATION";
     private static final String NOTIFICATION_DELETED_ACTION = "NOTIFICATION_DELETED";
     private static final String CREATE_NOTIFICATION_ACTION = "CREATE_NOTIFICATION";
+    private static final String NOTIFICATION_CHANNEL_ID_ALARM = "ALARM_NOTIFICATION";
     private PrefUtils timerPreferences;
     private AudioManager audioManager;
     private final int timerNotificationSummaryColor = Color.rgb(113, 132, 227);
@@ -52,7 +56,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         String action = intent.getAction();
 
-        if (action.equals(CREATE_NOTIFICATION_ACTION)) {
+        if (CREATE_NOTIFICATION_ACTION.equals(action)) {
             int timerNumberId = intent.getIntExtra("timerNumberId", 0);
 
             Intent timerNotifIntent = new Intent(context, TimerNotifyService.class);
@@ -94,7 +98,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 default:
                     break;
             }
-        } else if (action.equals(NOTIFICATION_DELETED_ACTION)) {
+        } else if (NOTIFICATION_DELETED_ACTION.equals(action)) {
             long millisToCount = timerPreferences.getOriginalTime();
             long millisToCountTwo = timerPreferences.getOriginalTimeTwo();
             long millisToCountThree = timerPreferences.getOriginalTimeThree();
@@ -122,8 +126,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 //        Log.v(TAG, "alarmVolume = " + alarmVolume);
 
-        Uri notification = Uri.parse("android.resource://" + "com.professionalkitchentimer.iinewmanii.professionalkitchentimer"
-                + '/' + R.raw.alarm_clock_short);
+        /* Build a Uri to send our alarm sound file to a remote object */
+        Uri alarmSound = Uri.parse("android.resource://" + context.getPackageName() + '/' + R.raw.alarm_clock_short);
 
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
@@ -133,7 +137,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         timerPreferences.setTimerNotificationAlarm(true);
         audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, alarmVolume, 0);
 
-        /* Create Intents for when the user taps on a notification and deletes notification */
+        /* Create Intents for when the user taps on an alarm and swipes to delete alarm */
         Intent alarmTappedIntent = new Intent(context, MainActivity.class);
         alarmTappedIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent senderTapped = PendingIntent.getActivity(context, timerNumber, alarmTappedIntent, 0);
@@ -143,12 +147,33 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent senderSwiped = PendingIntent.getBroadcast(context.getApplicationContext(), 0, alarmSwipedIntent, 0);
 
         /* Create alarm notification */
-        NotificationCompat.Builder timerNotificationBuilder = new NotificationCompat.Builder(context);
+        NotificationManager alarmNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        NotificationCompat.Builder timerNotificationBuilder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            timerNotificationBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID_ALARM);
+
+            NotificationChannel alarmNotificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID_ALARM,
+                    "Alarm Notification", NotificationManager.IMPORTANCE_HIGH);
+
+            AudioAttributes alarmAudioAttr = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            alarmNotificationChannel.setSound(alarmSound, alarmAudioAttr);
+            if (alarmNotificationManager != null) {
+                alarmNotificationManager.createNotificationChannel(alarmNotificationChannel);
+            }
+        } else {
+            timerNotificationBuilder = new NotificationCompat.Builder(context);
+        }
 
         int lightFlashingInterval = 500;
-        timerNotificationBuilder.setPriority(Notification.PRIORITY_HIGH)
+        timerNotificationBuilder.setPriority(PRIORITY_HIGH)
                 .setColor(notifColor)
-                .setSound(notification)
+                .setSound(alarmSound)
                 .setLights(lightColor, lightFlashingInterval, lightFlashingInterval)
                 .setContentTitle("Timer " + timerNumber + " has finished")
                 .setContentText("Swipe or Tap to cancel alarm")
@@ -158,7 +183,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.drawable.ic_pkt_alarm)
                 .setWhen(System.currentTimeMillis())
                 .setShowWhen(true)
-                .setAutoCancel(false)
+                .setAutoCancel(true)
                 .setDeleteIntent(senderSwiped);
 
         if (vibrateSetting) {
@@ -167,26 +192,30 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Notification timerNotification = timerNotificationBuilder.build();
         timerNotification.flags |= Notification.FLAG_INSISTENT;
-        NotificationManager alarmNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
         if (alarmNotificationManager != null) {
             alarmNotificationManager.notify(timerNumberId, timerNotification);
         }
 
-        /* Create summary notification */
+        // TODO: 3/8/18 Summary kind of works could probably be made better.
+        /* Create summary alarmSound */
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             StatusBarNotification[] activeNotifications = alarmNotificationManager.getActiveNotifications();
 
             int numberOfNotifications = activeNotifications.length;
 
             if (numberOfNotifications > 1) {
-                NotificationCompat.Builder summaryNotificationBuilder = new NotificationCompat.Builder(context);
+                NotificationCompat.Builder summaryNotificationBuilder;
+
+                summaryNotificationBuilder = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) ?
+                        new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID_ALARM) : new NotificationCompat.Builder(context);
 
                 summaryNotificationBuilder.setSmallIcon(R.drawable.ic_pkt_alarm)
                         .setColor(timerNotificationSummaryColor)
                         .setContentTitle("Multiple alarms have finished!")
                         .setContentText("PKT")
                         .setContentIntent(senderTapped)
-                        .setSound(notification)
+                        .setSound(alarmSound)
                         .setGroup(ALARM_NOTIFICATION_GROUP_KEY)
                         .setGroupSummary(true)
                         .setAutoCancel(true)

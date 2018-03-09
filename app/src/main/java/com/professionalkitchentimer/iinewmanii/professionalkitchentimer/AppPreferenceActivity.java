@@ -22,6 +22,8 @@ import android.widget.TextView;
  * The settings activity.
  */
 
+// TODO: 3/8/18 Add back arrow button to preference screen.
+
 public class AppPreferenceActivity extends PreferenceActivity {
 //    private static final String TAG = "NEWMAN";
 
@@ -65,15 +67,15 @@ public class AppPreferenceActivity extends PreferenceActivity {
 
             View preferenceView = inflater.inflate(R.layout.preferences, container, false);
 
-            alarmVolumeSeekBar = (SeekBar) preferenceView.findViewById(R.id.alarm_volume_seek_bar);
-            warningAlarmTimeSeekBar = (SeekBar) preferenceView.findViewById(R.id.warning_alarm_volume_seek_bar);
+            alarmVolumeSeekBar = preferenceView.findViewById(R.id.alarm_volume_seek_bar);
+            warningAlarmTimeSeekBar = preferenceView.findViewById(R.id.warning_alarm_volume_seek_bar);
             audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-            seekBarValue = (TextView) preferenceView.findViewById(R.id.seek_bar_value);
-            warningAlarmSeekBarValue = (TextView) preferenceView.findViewById(R.id.warning_alarm_value);
-            versionNumberText = (TextView) preferenceView.findViewById(R.id.version_number);
-            keepScreenOnCheckbox = (CheckBox) preferenceView.findViewById(R.id.keep_screen_on_checkbox);
-            vibrateCheckbox = (CheckBox) preferenceView.findViewById(R.id.vibrate_checkbox);
-            warningAlarmCheckbox = (CheckBox) preferenceView.findViewById(R.id.warning_alarm_checkbox);
+            seekBarValue = preferenceView.findViewById(R.id.seek_bar_value);
+            warningAlarmSeekBarValue = preferenceView.findViewById(R.id.warning_alarm_value);
+            versionNumberText = preferenceView.findViewById(R.id.version_number);
+            keepScreenOnCheckbox = preferenceView.findViewById(R.id.keep_screen_on_checkbox);
+            vibrateCheckbox = preferenceView.findViewById(R.id.vibrate_checkbox);
+            warningAlarmCheckbox = preferenceView.findViewById(R.id.warning_alarm_checkbox);
 
             alarmVolume = timerPreferences.getAlarmVolume();
             warningAlarmMinute = timerPreferences.getWarningAlarmMinute();

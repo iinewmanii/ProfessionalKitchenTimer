@@ -1,6 +1,7 @@
 package com.professionalkitchentimer.iinewmanii.professionalkitchentimer;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -24,6 +26,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private final int firebaseMessageColor = Color.argb(255, 113, 132, 227);
 
+    private static final String NOTIFICATION_CHANNEL_ID_FIREBASE_PUSH = "Push Notification";
+
+    private NotificationManager notificationManager;
+
     /**
      * Called when message is received.
      *
@@ -32,6 +38,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel pushNotificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID_FIREBASE_PUSH,
+                    "Push Notification", NotificationManager.IMPORTANCE_DEFAULT);
+
+            notificationManager.createNotificationChannel(pushNotificationChannel);
+        }
 
         String messageType = remoteMessage.getData().get("type");
 
@@ -53,10 +65,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
     // [END receive_message]
 
-    private void firebaseBigPictureMessageFunction(String messageTitle, String messageBody, Bitmap image) {
+    private void firebaseBigPictureMessageFunction(CharSequence messageTitle, CharSequence messageBody, Bitmap image) {
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -67,8 +78,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Bitmap FcmLargeIconBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_pkt_launcher);
 
-        NotificationCompat.Builder bigPictureNotificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_pkt_icon_ticker)
+        NotificationCompat.Builder bigPictureNotificationBuilder;
+
+        bigPictureNotificationBuilder = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) ?
+                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID_FIREBASE_PUSH) : new NotificationCompat.Builder(this);
+
+        bigPictureNotificationBuilder.setSmallIcon(R.drawable.ic_pkt_icon_ticker)
                 .setLargeIcon(FcmLargeIconBitmap)
                 .setColor(firebaseMessageColor)
                 .setContentTitle(messageTitle)
@@ -79,13 +94,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent)
                 .setPriority(Notification.PRIORITY_HIGH);
 
-        notificationManager.notify(0 /* ID of notification */, bigPictureNotificationBuilder.build());
+        if (notificationManager != null) {
+            notificationManager.notify(0 /* ID of notification */, bigPictureNotificationBuilder.build());
+        }
     }
 
-    private void firebaseBigTextMessageFunction(String messageTitle, String messageBody, String bigText) {
+    private void firebaseBigTextMessageFunction(CharSequence messageTitle, CharSequence messageBody, CharSequence bigText) {
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -96,8 +112,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Bitmap FcmLargeIconBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_pkt_launcher);
 
-        NotificationCompat.Builder bigTextNotificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_pkt_icon_ticker)
+        NotificationCompat.Builder bigTextNotificationBuilder;
+
+        bigTextNotificationBuilder = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) ?
+               new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID_FIREBASE_PUSH) : new NotificationCompat.Builder(this);
+
+        bigTextNotificationBuilder.setSmallIcon(R.drawable.ic_pkt_icon_ticker)
                 .setLargeIcon(FcmLargeIconBitmap)
                 .setColor(firebaseMessageColor)
                 .setContentTitle(messageTitle)
@@ -108,7 +128,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent)
                 .setPriority(Notification.PRIORITY_HIGH);
 
-        notificationManager.notify(0 /* ID of notification */, bigTextNotificationBuilder.build());
+        if (notificationManager != null) {
+            notificationManager.notify(0 /* ID of notification */, bigTextNotificationBuilder.build());
+        }
     }
 
     private static Bitmap getBitmapfromUrl(String imageUrl) {
